@@ -15,16 +15,12 @@ export function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+    <header className="sticky top-0 z-50 w-full bg-primary backdrop-blur supports-[backdrop-filter]:bg-primary/95 border-b border-primary-foreground/10">
       <div className="container-wide">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Biz Millennium" className="h-8 w-auto" />
-            <div className="flex flex-col leading-none">
-              <span className="text-sm font-semibold text-primary">biz</span>
-              <span className="text-sm font-semibold text-primary">millennium</span>
-            </div>
+          <Link to="/" className="flex items-center">
+            <img src={logo} alt="Biz Millennium" className="h-10 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -33,7 +29,7 @@ export function Header() {
               <Link
                 key={item.name}
                 to={item.href}
-                className="nav-link flex items-center gap-1 text-sm font-medium"
+                className="flex items-center gap-1 text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
               >
                 {item.name}
                 {item.hasDropdown && <ChevronDown className="h-4 w-4" />}
@@ -43,7 +39,7 @@ export function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="default" asChild>
+            <Button variant="secondary" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
               <Link to="/contact">Partner with Us</Link>
             </Button>
           </div>
@@ -51,7 +47,7 @@ export function Header() {
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Toggle menu</span>
               </Button>

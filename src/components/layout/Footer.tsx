@@ -38,12 +38,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <img src={logo} alt="Biz Millennium" className="h-10 w-auto invert" />
-              <div className="flex flex-col leading-none">
-                <span className="text-lg font-semibold">biz</span>
-                <span className="text-lg font-semibold">millennium</span>
-              </div>
+            <Link to="/" className="flex items-center mb-4">
+              <img src={logo} alt="Biz Millennium" className="h-12 w-auto" />
             </Link>
             <p className="text-primary-foreground/80 text-sm mb-6 max-w-sm">
               Unleashing Tomorrow's Business Solutions, Today. Explore a World Where Innovation Meets Commerce.
