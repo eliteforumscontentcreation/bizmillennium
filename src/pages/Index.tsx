@@ -1,7 +1,6 @@
 import { Layout } from "@/components/layout";
 import {
   HeroSection,
-  StatsSection,
   PartnersSection,
   EventTypesSection,
   ExpertiseSection,
@@ -15,7 +14,6 @@ const Index = () => {
   return (
     <Layout>
       <HeroSection />
-      <StatsSection />
       <PartnersSection />
       <EventTypesSection />
       <ExpertiseSection />
