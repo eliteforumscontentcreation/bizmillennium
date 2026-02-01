@@ -133,7 +133,16 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-gray-700">
           <p className="text-sm text-gray-400 text-center">
-            Copyright © {new Date().getFullYear()} <span className="text-white font-medium">Averance Group of Companies</span> | Averance Pvt. Ltd.
+            Copyright © {new Date().getFullYear()}{" "}
+            <a 
+              href="https://averance.in/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-white font-medium hover:text-accent transition-colors"
+            >
+              Averance Group of Companies
+            </a>{" "}
+            | Averance Pvt. Ltd.
             <br />
             All Rights Reserved.
           </p>
