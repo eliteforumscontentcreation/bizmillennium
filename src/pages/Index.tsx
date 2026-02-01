@@ -8,6 +8,7 @@ import {
   TestimonialsSection,
   BlogSection,
   GalleryCtaSection,
+  CtaSection,
 } from "@/components/home";
 
 const Index = () => {
@@ -21,6 +22,7 @@ const Index = () => {
       <TestimonialsSection />
       <BlogSection />
       <GalleryCtaSection />
+      <CtaSection />
     </Layout>
   );
 };
