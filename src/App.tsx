@@ -12,6 +12,13 @@ import About from "./pages/About";
 import Gallery from "./pages/Gallery";
 import Careers from "./pages/Careers";
 import Auth from "./pages/Auth";
+import Company from "./pages/Company";
+import Brands from "./pages/Brands";
+import Partners from "./pages/Partners";
+import Conferences from "./pages/Conferences";
+import Roundtable from "./pages/Roundtable";
+import InHouse from "./pages/InHouse";
+import DataGeneration from "./pages/DataGeneration";
 import Dashboard from "./pages/admin/Dashboard";
 import EventsAdmin from "./pages/admin/EventsAdmin";
 import BlogsAdmin from "./pages/admin/BlogsAdmin";
@@ -24,6 +31,8 @@ import UsersAdmin from "./pages/admin/UsersAdmin";
 import SettingsAdmin from "./pages/admin/SettingsAdmin";
 import NavigationAdmin from "./pages/admin/NavigationAdmin";
 import StatisticsAdmin from "./pages/admin/StatisticsAdmin";
+import BrandsAdmin from "./pages/admin/BrandsAdmin";
+import PagesAdmin from "./pages/admin/PagesAdmin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +47,13 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
+            <Route path="/company" element={<Company />} />
+            <Route path="/brands" element={<Brands />} />
+            <Route path="/partners" element={<Partners />} />
+            <Route path="/conferences" element={<Conferences />} />
+            <Route path="/roundtable" element={<Roundtable />} />
+            <Route path="/in-house" element={<InHouse />} />
+            <Route path="/data-generation" element={<DataGeneration />} />
             <Route path="/events" element={<Events />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/contact" element={<Contact />} />
@@ -58,6 +74,8 @@ const App = () => (
             <Route path="/admin/settings" element={<SettingsAdmin />} />
             <Route path="/admin/navigation" element={<NavigationAdmin />} />
             <Route path="/admin/statistics" element={<StatisticsAdmin />} />
+            <Route path="/admin/brands" element={<BrandsAdmin />} />
+            <Route path="/admin/pages" element={<PagesAdmin />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

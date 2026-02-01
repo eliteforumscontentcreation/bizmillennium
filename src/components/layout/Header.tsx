@@ -8,7 +8,7 @@ import logo from "@/assets/logo.png";
 
 // About BM items with icons
 const fallbackAboutItems = [
-  { id: "1", name: "Company", link: "/about", description: "Discover our journey and core values.", color: "bg-blue-500", icon: Building2 },
+  { id: "1", name: "Company", link: "/company", description: "Discover our journey and core values.", color: "bg-blue-500", icon: Building2 },
   { id: "2", name: "Our Brands", link: "/brands", description: "Explore the brands that define us.", color: "bg-orange-500", icon: Briefcase },
   { id: "3", name: "Partners", link: "/partners", description: "Building successful collaborations worldwide.", color: "bg-green-500", icon: Users },
   { id: "4", name: "Event Gallery", link: "/gallery", description: "A glimpse into our memorable moments.", color: "bg-pink-500", icon: Image },
@@ -18,10 +18,10 @@ const fallbackAboutItems = [
 
 // Our Businesses items with icons
 const fallbackBusinessItems = [
-  { id: "7", name: "Conferences", link: "/events?type=conference", description: "Leading industry events & discussions.", color: "bg-orange-500", icon: Mic2 },
-  { id: "8", name: "Roundtable", link: "/events?type=roundtable", description: "Exclusive, high-level discussions.", color: "bg-cyan-500", icon: UsersRound },
-  { id: "9", name: "In-house", link: "/events?type=inhouse", description: "Tailored solutions for your organization.", color: "bg-gray-600", icon: Home },
-  { id: "10", name: "Data Generation", link: "/events?type=data", description: "Custom data as per your needs.", color: "bg-purple-500", icon: Database },
+  { id: "7", name: "Conferences", link: "/conferences", description: "Leading industry events & discussions.", color: "bg-orange-500", icon: Mic2 },
+  { id: "8", name: "Roundtable", link: "/roundtable", description: "Exclusive, high-level discussions.", color: "bg-cyan-500", icon: UsersRound },
+  { id: "9", name: "In-house", link: "/in-house", description: "Tailored solutions for your organization.", color: "bg-gray-600", icon: Home },
+  { id: "10", name: "Data Generation", link: "/data-generation", description: "Custom data as per your needs.", color: "bg-purple-500", icon: Database },
 ];
 
 export function Header() {

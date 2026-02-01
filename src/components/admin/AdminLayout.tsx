@@ -27,6 +27,8 @@ import {
   Briefcase,
   BarChart3,
   Navigation,
+  Layers,
+  Globe,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 
@@ -38,9 +40,11 @@ const menuItems = [
   { title: "Gallery", url: "/admin/gallery", icon: Image },
   { title: "Testimonials", url: "/admin/testimonials", icon: MessageSquare },
   { title: "Partners", url: "/admin/partners", icon: Building2 },
-  { title: "Domains", url: "/admin/domains", icon: BarChart3 },
+  { title: "Brands", url: "/admin/brands", icon: Layers },
+  { title: "Domains", url: "/admin/domains", icon: Globe },
   { title: "Statistics", url: "/admin/statistics", icon: BarChart3 },
   { title: "Navigation", url: "/admin/navigation", icon: Navigation },
+  { title: "Pages", url: "/admin/pages", icon: FileText },
   { title: "Users", url: "/admin/users", icon: Users },
   { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
