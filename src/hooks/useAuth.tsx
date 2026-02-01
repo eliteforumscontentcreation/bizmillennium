@@ -23,35 +23,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    // Always include role check in the loading state, otherwise admin pages can
-    // redirect to / before isAdmin has been resolved (race condition).
-    const syncSession = async (nextSession: Session | null) => {
+    const setAuthState = (nextSession: Session | null) => {
       if (!mounted) return;
-
-      setLoading(true);
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
+    };
+
+    const resolveRoleAndStopLoading = async (nextSession: Session | null) => {
+      if (!mounted) return;
 
       if (nextSession?.user) {
         const admin = await checkAdminStatus(nextSession.user.id);
         if (mounted) setIsAdmin(admin);
       } else {
-        setIsAdmin(false);
+        if (mounted) setIsAdmin(false);
       }
 
       if (mounted) setLoading(false);
     };
 
-    // Initialize session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      syncSession(session);
-    });
-
-    // Subscribe to changes
+    // Listener FIRST (but keep it sync; defer backend calls to avoid deadlocks)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      syncSession(session);
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setLoading(true);
+      setAuthState(nextSession);
+      setTimeout(() => {
+        resolveRoleAndStopLoading(nextSession);
+      }, 0);
+    });
+
+    // THEN check for existing session
+    setLoading(true);
+    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      setAuthState(initialSession);
+      setTimeout(() => {
+        resolveRoleAndStopLoading(initialSession);
+      }, 0);
     });
 
     return () => {
