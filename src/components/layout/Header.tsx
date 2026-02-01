@@ -87,7 +87,7 @@ export function Header() {
                   <div className="grid grid-cols-2 gap-8">
                     {/* About BM Column */}
                     <div>
-                      <h3 className="text-sm font-semibold text-foreground mb-4">About BM</h3>
+                      <h3 className="text-sm font-semibold text-foreground mb-4">About Biz Millennium</h3>
                       <div className="space-y-3">
                         {fallbackAboutItems.map((item) => {
                           const IconComponent = item.icon;
