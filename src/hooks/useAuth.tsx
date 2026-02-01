@@ -21,49 +21,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Check admin status after auth change
-        if (session?.user) {
-          setTimeout(() => {
-            checkAdminStatus(session.user.id);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-        }
-      }
-    );
+    let mounted = true;
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        checkAdminStatus(session.user.id);
+    // Always include role check in the loading state, otherwise admin pages can
+    // redirect to / before isAdmin has been resolved (race condition).
+    const syncSession = async (nextSession: Session | null) => {
+      if (!mounted) return;
+
+      setLoading(true);
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+
+      if (nextSession?.user) {
+        const admin = await checkAdminStatus(nextSession.user.id);
+        if (mounted) setIsAdmin(admin);
+      } else {
+        setIsAdmin(false);
       }
-      setLoading(false);
+
+      if (mounted) setLoading(false);
+    };
+
+    // Initialize session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      syncSession(session);
     });
 
-    return () => subscription.unsubscribe();
+    // Subscribe to changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      syncSession(session);
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const checkAdminStatus = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
-    
-    if (!error && data) {
-      setIsAdmin(true);
-    } else {
-      setIsAdmin(false);
-    }
+  const checkAdminStatus = async (userId: string): Promise<boolean> => {
+    // Use the backend role check function (avoids RLS/select-policy pitfalls).
+    const { data, error } = await supabase.rpc("has_role", {
+      _user_id: userId,
+      _role: "admin",
+    });
+
+    if (error) return false;
+    return Boolean(data);
   };
 
   const signIn = async (email: string, password: string) => {
