@@ -20,6 +20,8 @@ import Roundtable from "./pages/Roundtable";
 import InHouse from "./pages/InHouse";
 import DataGeneration from "./pages/DataGeneration";
 import CareerDetail from "./pages/CareerDetail";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import Dashboard from "./pages/admin/Dashboard";
 import EventsAdmin from "./pages/admin/EventsAdmin";
 import EventTypesAdmin from "./pages/admin/EventTypesAdmin";
@@ -66,6 +68,8 @@ const App = () => (
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/careers/:slug" element={<CareerDetail />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/auth" element={<Auth />} />
             
             {/* Admin Routes */}
