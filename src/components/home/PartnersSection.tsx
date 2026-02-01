@@ -39,9 +39,12 @@ export function PartnersSection() {
   }, []);
 
   const displayPartners = partners.length > 0 ? partners : fallbackPartnerLogos;
+  
+  // Duplicate the partners array for seamless infinite scroll
+  const duplicatedPartners = [...displayPartners, ...displayPartners];
 
   return (
-    <section className="py-12 bg-background">
+    <section className="py-12 bg-background overflow-hidden">
       <div className="container-wide">
         {/* Header */}
         <div className="flex items-center gap-4 mb-10">
@@ -54,27 +57,29 @@ export function PartnersSection() {
             view all
           </Link>
         </div>
+      </div>
 
-        {/* Partner Logos - Static grid for larger logos */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 items-center">
-          {displayPartners.slice(0, 5).map((partner) => (
+      {/* Infinite Scrolling Carousel */}
+      <div className="relative">
+        <div className="flex animate-marquee">
+          {duplicatedPartners.map((partner, index) => (
             <div
-              key={partner.id}
-              className="flex items-center justify-center p-4 grayscale hover:grayscale-0 transition-all duration-300"
+              key={`${partner.id}-${index}`}
+              className="flex-shrink-0 mx-8 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
             >
               {partner.website_url ? (
                 <a href={partner.website_url} target="_blank" rel="noopener noreferrer">
                   <img
                     src={partner.logo_url}
                     alt={partner.name}
-                    className="max-h-20 md:max-h-24 w-auto object-contain"
+                    className="h-12 md:h-16 w-auto object-contain"
                   />
                 </a>
               ) : (
                 <img
                   src={partner.logo_url}
                   alt={partner.name}
-                  className="max-h-20 md:max-h-24 w-auto object-contain"
+                  className="h-12 md:h-16 w-auto object-contain"
                 />
               )}
             </div>
