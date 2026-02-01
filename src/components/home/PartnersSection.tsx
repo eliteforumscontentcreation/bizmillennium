@@ -60,8 +60,14 @@ export function PartnersSection() {
       </div>
 
       {/* Infinite Scrolling Carousel */}
-      <div className="relative">
-        <div className="flex animate-marquee">
+      <div className="relative overflow-hidden">
+        <div 
+          className="flex"
+          style={{
+            animation: 'marquee 30s linear infinite',
+            width: 'max-content'
+          }}
+        >
           {duplicatedPartners.map((partner, index) => (
             <div
               key={`${partner.id}-${index}`}
