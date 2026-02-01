@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,9 +12,10 @@ interface Testimonial {
   photo_url: string | null;
 }
 
-export function TestimonialsSection() {
+export const TestimonialsSection = forwardRef<HTMLElement>((_, ref) => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     async function fetchTestimonials() {
@@ -39,20 +40,36 @@ export function TestimonialsSection() {
 
   const displayTestimonials = testimonials.length > 0 ? testimonials : fallbackTestimonials;
 
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % displayTestimonials.length);
-  };
+  }, [displayTestimonials.length]);
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev - 1 + displayTestimonials.length) % displayTestimonials.length);
-  };
+  }, [displayTestimonials.length]);
+
+  // Auto-scroll effect
+  useEffect(() => {
+    if (displayTestimonials.length <= 1 || isPaused) return;
+
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [displayTestimonials.length, isPaused, nextSlide]);
 
   if (displayTestimonials.length === 0) return null;
 
   const current = displayTestimonials[currentIndex];
 
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section 
+      ref={ref}
+      className="py-16 md:py-24 bg-background"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <div className="container-wide">
         {/* Header */}
         <div className="text-center mb-12">
@@ -65,7 +82,7 @@ export function TestimonialsSection() {
 
         {/* Testimonial Card */}
         <div className="max-w-4xl mx-auto">
-          <div className="testimonial-card relative">
+          <div className="testimonial-card relative transition-all duration-500">
             <Quote className="h-12 w-12 text-accent/20 absolute top-6 left-6" />
             
             <div className="pt-12 pb-6 px-4 md:px-8">
@@ -125,4 +142,6 @@ export function TestimonialsSection() {
       </div>
     </section>
   );
-}
+});
+
+TestimonialsSection.displayName = "TestimonialsSection";

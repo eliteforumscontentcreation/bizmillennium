@@ -202,6 +202,16 @@
     }
   }
 
+  /* Marquee animation for partners */
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
   /* Domain Cards */
   .domain-card {
     @apply relative p-6 rounded-2xl bg-card overflow-hidden;
