@@ -29,15 +29,23 @@ import {
   Navigation,
   Layers,
   Globe,
+  Mail,
+  Tag,
+  ImageIcon,
+  ClipboardList,
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const menuItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
   { title: "Events", url: "/admin/events", icon: Calendar },
+  { title: "Event Types", url: "/admin/event-types", icon: Tag },
   { title: "Blogs", url: "/admin/blogs", icon: FileText },
+  { title: "Blog Categories", url: "/admin/blog-categories", icon: Tag },
   { title: "Careers", url: "/admin/careers", icon: Briefcase },
+  { title: "Job Applications", url: "/admin/job-applications", icon: ClipboardList },
   { title: "Gallery", url: "/admin/gallery", icon: Image },
+  { title: "Hero Sections", url: "/admin/hero-sections", icon: ImageIcon },
   { title: "Testimonials", url: "/admin/testimonials", icon: MessageSquare },
   { title: "Partners", url: "/admin/partners", icon: Building2 },
   { title: "Brands", url: "/admin/brands", icon: Layers },
@@ -45,6 +53,7 @@ const menuItems = [
   { title: "Statistics", url: "/admin/statistics", icon: BarChart3 },
   { title: "Navigation", url: "/admin/navigation", icon: Navigation },
   { title: "Pages", url: "/admin/pages", icon: FileText },
+  { title: "Contact Submissions", url: "/admin/contact-submissions", icon: Mail },
   { title: "Users", url: "/admin/users", icon: Users },
   { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
