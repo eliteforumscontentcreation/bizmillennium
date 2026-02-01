@@ -11,6 +11,7 @@ interface Domain {
 export function DomainsSection() {
   const [domains, setDomains] = useState<Domain[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     async function fetchDomains() {
@@ -41,8 +42,24 @@ export function DomainsSection() {
   const displayDomains = domains.length > 0 ? domains : fallbackDomains;
   const selectedDomain = displayDomains[selectedIndex];
 
+  // Auto-scroll effect
+  useEffect(() => {
+    if (displayDomains.length <= 1) return;
+    if (isPaused) return;
+
+    const intervalId = setInterval(() => {
+      setSelectedIndex((prev) => (prev + 1) % displayDomains.length);
+    }, 3000); // Change every 3 seconds
+
+    return () => clearInterval(intervalId);
+  }, [displayDomains.length, isPaused]);
+
   return (
-    <section className="py-16 md:py-24 bg-secondary">
+    <section 
+      className="py-16 md:py-24 bg-secondary"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <div className="container-wide">
         {/* Header */}
         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-12">
