@@ -7,3 +7,4 @@ export { DomainsSection } from "./DomainsSection";
 export { TestimonialsSection } from "./TestimonialsSection";
 export { BlogSection } from "./BlogSection";
 export { GalleryCtaSection } from "./GalleryCtaSection";
+export { CtaSection } from "./CtaSection";
