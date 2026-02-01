@@ -230,16 +230,16 @@ export default function GalleryAdmin() {
                 <div className="space-y-2">
                   <Label htmlFor="event_id">Event (for gallery tabs)</Label>
                   <Select
-                    value={formData.event_id}
+                    value={formData.event_id || "none"}
                     onValueChange={(value) =>
-                      setFormData({ ...formData, event_id: value })
+                      setFormData({ ...formData, event_id: value === "none" ? "" : value })
                     }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select an event" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No Event</SelectItem>
+                      <SelectItem value="none">No Event</SelectItem>
                       {events.map((event) => (
                         <SelectItem key={event.id} value={event.id}>
                           {event.title}
