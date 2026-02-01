@@ -1,22 +1,50 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-const partnerLogos = [
-  { name: "AWS", logo: "https://bizmillennium.com/wp-content/uploads/2023/08/aws-Our-Partners.jpg" },
-  { name: "Dell", logo: "https://bizmillennium.com/wp-content/uploads/2023/08/Dell-Our-Partners.jpg" },
-  { name: "Freshworks", logo: "https://bizmillennium.com/wp-content/uploads/2023/08/Freshworks-Our-Partners.jpg" },
-  { name: "Apple", logo: "https://bizmillennium.com/wp-content/uploads/2023/08/apple-Our-Partners.jpg" },
-  { name: "Clear", logo: "https://bizmillennium.com/wp-content/uploads/2023/08/clear-Our-Partners.jpg" },
-  { name: "Workplace", logo: "https://bizmillennium.com/wp-content/uploads/2023/08/workplace-Our-Partners.jpg" },
-  { name: "Chrome", logo: "https://bizmillennium.com/wp-content/uploads/2023/08/Chrome-Our-Partners.jpg" },
-  { name: "Happay", logo: "https://bizmillennium.com/wp-content/uploads/2023/08/Happay-Our-Partners.jpg" },
+interface Partner {
+  id: string;
+  name: string;
+  logo_url: string;
+  website_url: string | null;
+}
+
+const fallbackPartnerLogos = [
+  { id: "1", name: "Clear", logo_url: "https://bizmillennium.com/wp-content/uploads/2023/08/clear-Our-Partners.jpg", website_url: null },
+  { id: "2", name: "Workplace", logo_url: "https://bizmillennium.com/wp-content/uploads/2023/08/workplace-Our-Partners.jpg", website_url: null },
+  { id: "3", name: "Chrome Enterprise", logo_url: "https://bizmillennium.com/wp-content/uploads/2023/08/Chrome-Our-Partners.jpg", website_url: null },
+  { id: "4", name: "AWS", logo_url: "https://bizmillennium.com/wp-content/uploads/2023/08/aws-Our-Partners.jpg", website_url: null },
+  { id: "5", name: "Happay", logo_url: "https://bizmillennium.com/wp-content/uploads/2023/08/Happay-Our-Partners.jpg", website_url: null },
+  { id: "6", name: "Dell", logo_url: "https://bizmillennium.com/wp-content/uploads/2023/08/Dell-Our-Partners.jpg", website_url: null },
+  { id: "7", name: "Freshworks", logo_url: "https://bizmillennium.com/wp-content/uploads/2023/08/Freshworks-Our-Partners.jpg", website_url: null },
+  { id: "8", name: "Apple", logo_url: "https://bizmillennium.com/wp-content/uploads/2023/08/apple-Our-Partners.jpg", website_url: null },
 ];
 
 export function PartnersSection() {
+  const [partners, setPartners] = useState<Partner[]>([]);
+
+  useEffect(() => {
+    async function fetchPartners() {
+      const { data, error } = await supabase
+        .from("partners")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order");
+
+      if (!error && data && data.length > 0) {
+        setPartners(data);
+      }
+    }
+    fetchPartners();
+  }, []);
+
+  const displayPartners = partners.length > 0 ? partners : fallbackPartnerLogos;
+
   return (
     <section className="py-12 bg-background">
       <div className="container-wide">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-10">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">Our Partners</h2>
           <div className="h-px flex-1 bg-border" />
           <Link 
@@ -27,22 +55,30 @@ export function PartnersSection() {
           </Link>
         </div>
 
-        {/* Partner Logos Marquee */}
-        <div className="relative overflow-hidden">
-          <div className="flex animate-marquee">
-            {[...partnerLogos, ...partnerLogos].map((partner, index) => (
-              <div
-                key={`${partner.name}-${index}`}
-                className="flex-shrink-0 mx-8 w-32 h-16 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
-              >
+        {/* Partner Logos - Static grid for larger logos */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 items-center">
+          {displayPartners.slice(0, 5).map((partner) => (
+            <div
+              key={partner.id}
+              className="flex items-center justify-center p-4 grayscale hover:grayscale-0 transition-all duration-300"
+            >
+              {partner.website_url ? (
+                <a href={partner.website_url} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={partner.logo_url}
+                    alt={partner.name}
+                    className="max-h-20 md:max-h-24 w-auto object-contain"
+                  />
+                </a>
+              ) : (
                 <img
-                  src={partner.logo}
+                  src={partner.logo_url}
                   alt={partner.name}
-                  className="max-h-12 w-auto object-contain"
+                  className="max-h-20 md:max-h-24 w-auto object-contain"
                 />
-              </div>
-            ))}
-          </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -6,125 +6,105 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface Statistic {
   id: string;
-  label: string;
   value: string;
+  label: string;
   sort_order: number;
 }
 
-interface HeroSectionProps {
-  headline?: string;
-  subheadline?: string;
-  ctaText?: string;
-  ctaLink?: string;
-  secondaryCtaText?: string;
-  secondaryCtaLink?: string;
-}
+const fallbackStats = [
+  { id: "1", value: "400+", label: "Successful Events", sort_order: 1 },
+  { id: "2", value: "170+", label: "Valued Partnerships", sort_order: 2 },
+  { id: "3", value: "8,000+", label: "Companies", sort_order: 3 },
+  { id: "4", value: "1,350+", label: "Experts Featured", sort_order: 4 },
+  { id: "5", value: "14,000+", label: "Delegates Engaged", sort_order: 5 },
+  { id: "6", value: "500+", label: "Industry Awards", sort_order: 6 },
+];
 
-export function HeroSection({
-  headline = "Biz Millennium",
-  subheadline = "Unleashing Tomorrow's Business Solutions, Today. Explore a World Where Innovation Meets Commerce at Biz Millennium.",
-  ctaText = "Partner with Us",
-  ctaLink = "/contact",
-  secondaryCtaText = "Upcoming Events",
-  secondaryCtaLink = "/events",
-}: HeroSectionProps) {
+export function HeroSection() {
   const [stats, setStats] = useState<Statistic[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchStats() {
       const { data, error } = await supabase
         .from("statistics")
         .select("*")
+        .eq("is_active", true)
         .order("sort_order");
 
-      if (!error && data) {
+      if (!error && data && data.length > 0) {
         setStats(data);
+      } else {
+        setStats(fallbackStats);
       }
-      setLoading(false);
     }
     fetchStats();
   }, []);
 
-  // Fallback data if database is empty
-  const fallbackStats = [
-    { id: "1", label: "Successful Events", value: "400+", sort_order: 1 },
-    { id: "2", label: "Valued Partnerships", value: "170+", sort_order: 2 },
-    { id: "3", label: "Companies", value: "8,000+", sort_order: 3 },
-    { id: "4", label: "Experts Featured", value: "1,350+", sort_order: 4 },
-    { id: "5", label: "Delegates Engaged", value: "14,000+", sort_order: 5 },
-    { id: "6", label: "Industry Awards", value: "500+", sort_order: 6 },
-  ];
-
   const displayStats = stats.length > 0 ? stats : fallbackStats;
 
   return (
-    <section className="relative py-16 md:py-20 lg:py-24 bg-secondary overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background to-secondary opacity-50" />
+    <section className="relative bg-background py-16 md:py-24 overflow-hidden">
+      {/* Subtle gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-secondary/30 to-transparent pointer-events-none" />
       
       <div className="container-wide relative z-10">
-        <div className="max-w-5xl mx-auto text-center">
-          {/* Headline */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 animate-fade-in-up hero-text-gradient">
-            {headline}
+        <div className="text-center max-w-4xl mx-auto mb-12">
+          {/* Main Title - Purple Gradient */}
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-[hsl(280,80%,55%)] to-[hsl(320,80%,55%)] bg-clip-text text-transparent">
+            Biz Millennium
           </h1>
-
-          {/* Subheadline */}
-          <p className="text-base md:text-lg text-muted-foreground mb-8 max-w-3xl mx-auto animate-fade-in-up animation-delay-100">
-            {subheadline}
+          
+          {/* Subtitle */}
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Unleashing Tomorrow's Business Solutions, Today. Explore a World Where Innovation Meets Commerce at Biz Millennium.
           </p>
-
+          
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8 animate-fade-in-up animation-delay-200">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
             <Button 
               size="lg" 
-              variant="outline" 
-              asChild 
-              className="px-8 rounded-full border-2 border-foreground/20 hover:bg-foreground hover:text-background"
+              variant="outline"
+              className="rounded-full px-8 border-foreground text-foreground hover:bg-foreground hover:text-background"
+              asChild
             >
-              <Link to={ctaLink}>{ctaText}</Link>
+              <Link to="/contact">Partner with Us</Link>
             </Button>
             <Button 
               size="lg" 
-              asChild 
-              className="px-8 rounded-full bg-primary hover:bg-primary/90"
+              className="rounded-full px-8 bg-foreground text-background hover:bg-foreground/90"
+              asChild
             >
-              <Link to={secondaryCtaLink}>{secondaryCtaText}</Link>
+              <a href="https://events.bizmillennium.com/" target="_blank" rel="noopener noreferrer">
+                Upcoming Events
+              </a>
             </Button>
           </div>
-
-          {/* Feature Highlights */}
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-sm text-muted-foreground mb-10 animate-fade-in-up animation-delay-300">
-            <div className="flex items-center gap-2">
-              <span>Custom Event Solutions</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Star className="h-3 w-3 text-accent" fill="currentColor" />
-            </div>
-            <div className="flex items-center gap-2">
-              <span>Tailored Event Experiences</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Star className="h-3 w-3 text-accent" fill="currentColor" />
-            </div>
-            <div className="flex items-center gap-2">
-              <span>Global Corporate Network</span>
-            </div>
+          
+          {/* Feature highlights */}
+          <div className="flex flex-wrap items-center justify-center gap-4 text-muted-foreground">
+            <span>Custom Event Solutions</span>
+            <Star className="h-3 w-3 fill-current text-muted-foreground/50" />
+            <span>Tailored Event Experiences</span>
+            <Star className="h-3 w-3 fill-current text-muted-foreground/50" />
+            <span>Global Corporate Network</span>
           </div>
-
-          {/* Stats Grid - Integrated into Hero */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 animate-fade-in-up animation-delay-400">
-            {displayStats.map((stat) => (
-              <div
-                key={stat.id}
-                className="stats-card py-4 px-3"
-              >
-                <div className="stats-number text-2xl md:text-3xl lg:text-4xl">{stat.value}</div>
-                <p className="text-xs md:text-sm text-muted-foreground mt-1">{stat.label}</p>
+        </div>
+        
+        {/* Stats Grid - 6 columns on desktop */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-12">
+          {displayStats.map((stat) => (
+            <div
+              key={stat.id}
+              className="bg-secondary/50 backdrop-blur-sm rounded-2xl p-6 text-center border border-border/50"
+            >
+              <div className="text-3xl md:text-4xl font-bold text-foreground mb-1">
+                {stat.value}
               </div>
-            ))}
-          </div>
+              <div className="text-sm text-muted-foreground">
+                {stat.label}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
