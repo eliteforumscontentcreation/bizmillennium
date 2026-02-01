@@ -1,90 +1,109 @@
 import { Link } from "react-router-dom";
-import { Facebook, Twitter, Linkedin, Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react";
+import { Linkedin, Facebook, Instagram } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const footerLinks = {
   company: [
-    { name: "About Us", href: "/about" },
-    { name: "Our Team", href: "/about#team" },
+    { name: "About", href: "/company" },
+    { name: "Upcoming Events", href: "https://events.bizmillennium.com/", external: true },
+    { name: "Past Events", href: "/gallery" },
+    { name: "Blogs", href: "/blog" },
     { name: "Careers", href: "/careers" },
-    { name: "Contact", href: "/contact" },
+    { name: "Contact Us", href: "/contact" },
   ],
-  events: [
-    { name: "Upcoming Events", href: "/events" },
-    { name: "Past Events", href: "/events?filter=past" },
-    { name: "Gallery", href: "/gallery" },
-    { name: "Event Types", href: "/events#types" },
+  services: [
+    { name: "In-House", href: "/in-house" },
+    { name: "Bespokes", href: "/conferences" },
+    { name: "Become a Member", href: "/contact" },
   ],
-  resources: [
-    { name: "Blog", href: "/blog" },
-    { name: "Our Brands", href: "/our-brands" },
-    { name: "Partners", href: "/partners" },
+  privacy: [
     { name: "Privacy Policy", href: "/privacy" },
+    { name: "Terms & Conditions", href: "/terms" },
+    { name: "Formerly Empiric Media", href: "#" },
   ],
 };
 
+const XIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </svg>
+);
+
 const socialLinks = [
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Instagram, href: "#", label: "Instagram" },
-  { icon: Youtube, href: "#", label: "YouTube" },
+  { Icon: Linkedin, href: "https://www.linkedin.com/company/bizmillennium/", label: "LinkedIn" },
+  { Icon: Facebook, href: "https://www.facebook.com/p/Biz-Millennium-100063890416062/", label: "Facebook" },
+  { Icon: Instagram, href: "https://www.instagram.com/biz.millennium/", label: "Instagram" },
+  { Icon: XIcon, href: "https://x.com/BizMillennium", label: "X (Twitter)" },
 ];
 
 export function Footer() {
   return (
-    <footer className="bg-primary text-primary-foreground">
-      <div className="container-wide py-12 md:py-16">
+    <footer className="bg-[#1a1a2e] text-white">
+      <div className="container-wide py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center mb-4">
-              <img src={logo} alt="Biz Millennium" className="h-12 w-auto" />
+              <img src={logo} alt="Biz Millennium" className="h-14 w-auto" />
             </Link>
-            <p className="text-primary-foreground/80 text-sm mb-6 max-w-sm">
-              Unleashing Tomorrow's Business Solutions, Today. Explore a World Where Innovation Meets Commerce.
+            <p className="text-gray-400 text-sm mb-8 max-w-sm">
+              Driving Business Success Through Networking and Collaboration
             </p>
-            
-            {/* Contact Info */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-sm text-primary-foreground/80">
-                <Mail className="h-4 w-4" />
-                <span>contact@bizmillennium.com</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-primary-foreground/80">
-                <Phone className="h-4 w-4" />
-                <span>+91-123-456-7890</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-primary-foreground/80">
-                <MapPin className="h-4 w-4" />
-                <span>Mumbai, India</span>
-              </div>
-            </div>
 
             {/* Social Links */}
-            <div className="flex gap-4 mt-6">
+            <div className="flex gap-3">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
                   href={social.href}
-                  className="h-10 w-10 rounded-full bg-primary-foreground/10 flex items-center justify-center hover:bg-accent transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-9 w-9 rounded-md bg-gray-700 flex items-center justify-center hover:bg-accent transition-colors"
                   aria-label={social.label}
                 >
-                  <social.icon className="h-5 w-5" />
+                  <social.Icon className="h-4 w-4" />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Links Columns */}
+          {/* Company Column */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Company</h3>
+            <h3 className="font-semibold text-lg mb-6">Company</h3>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
+                  {link.external ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-gray-400 hover:text-white transition-colors"
+                    >
+                      {link.name}
+                    </a>
+                  ) : (
+                    <Link
+                      to={link.href}
+                      className="text-sm text-gray-400 hover:text-white transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Services Column */}
+          <div>
+            <h3 className="font-semibold text-lg mb-6">Services</h3>
+            <ul className="space-y-3">
+              {footerLinks.services.map((link) => (
+                <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                    className="text-sm text-gray-400 hover:text-white transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -93,30 +112,15 @@ export function Footer() {
             </ul>
           </div>
 
+          {/* Privacy Column */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Events</h3>
+            <h3 className="font-semibold text-lg mb-6">Privacy Statement</h3>
             <ul className="space-y-3">
-              {footerLinks.events.map((link) => (
+              {footerLinks.privacy.map((link) => (
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Resources</h3>
-            <ul className="space-y-3">
-              {footerLinks.resources.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                    className="text-sm text-gray-400 hover:text-white transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -127,20 +131,12 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-primary-foreground/10">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-primary-foreground/60">
-              © {new Date().getFullYear()} Biz Millennium. All rights reserved.
-            </p>
-            <div className="flex gap-6">
-              <Link to="/privacy" className="text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
-                Privacy Policy
-              </Link>
-              <Link to="/terms" className="text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
-                Terms of Service
-              </Link>
-            </div>
-          </div>
+        <div className="mt-16 pt-8 border-t border-gray-700">
+          <p className="text-sm text-gray-400 text-center">
+            Copyright © {new Date().getFullYear()} <span className="text-white font-medium">Averance Group of Companies</span> | Averance Pvt. Ltd.
+            <br />
+            All Rights Reserved.
+          </p>
         </div>
       </div>
     </footer>
