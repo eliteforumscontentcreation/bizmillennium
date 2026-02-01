@@ -1,4 +1,3 @@
-import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { Linkedin, Facebook, Instagram } from "lucide-react";
 import logo from "@/assets/logo.png";
@@ -24,13 +23,11 @@ const footerLinks = {
   ],
 };
 
-const XIcon = forwardRef<SVGSVGElement, React.SVGProps<SVGSVGElement>>((props, ref) => (
-  <svg ref={ref} viewBox="0 0 24 24" className="h-4 w-4 fill-current" {...props}>
+const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" {...props}>
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
   </svg>
-));
-
-XIcon.displayName = "XIcon";
+);
 
 const socialLinks = [
   { Icon: Linkedin, href: "https://www.linkedin.com/company/bizmillennium/", label: "LinkedIn" },
@@ -39,9 +36,9 @@ const socialLinks = [
   { Icon: XIcon, href: "https://x.com/BizMillennium", label: "X (Twitter)" },
 ];
 
-export const Footer = forwardRef<HTMLElement>((_, ref) => {
+export function Footer() {
   return (
-    <footer ref={ref} className="bg-[#1a1a2e] text-white">
+    <footer className="bg-[#1a1a2e] text-white">
       <div className="container-wide py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Column */}
@@ -144,6 +141,4 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
       </div>
     </footer>
   );
-});
-
-Footer.displayName = "Footer";
+}

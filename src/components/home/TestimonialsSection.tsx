@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ interface Testimonial {
   photo_url: string | null;
 }
 
-export const TestimonialsSection = forwardRef<HTMLElement>((_, ref) => {
+export function TestimonialsSection() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -65,7 +65,6 @@ export const TestimonialsSection = forwardRef<HTMLElement>((_, ref) => {
 
   return (
     <section 
-      ref={ref}
       className="py-16 md:py-24 bg-background"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -142,6 +141,4 @@ export const TestimonialsSection = forwardRef<HTMLElement>((_, ref) => {
       </div>
     </section>
   );
-});
-
-TestimonialsSection.displayName = "TestimonialsSection";
+}
