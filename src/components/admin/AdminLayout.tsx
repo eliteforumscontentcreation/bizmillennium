@@ -39,6 +39,7 @@ const menuItems = [
   { title: "Testimonials", url: "/admin/testimonials", icon: MessageSquare },
   { title: "Partners", url: "/admin/partners", icon: Building2 },
   { title: "Domains", url: "/admin/domains", icon: BarChart3 },
+  { title: "Statistics", url: "/admin/statistics", icon: BarChart3 },
   { title: "Navigation", url: "/admin/navigation", icon: Navigation },
   { title: "Users", url: "/admin/users", icon: Users },
   { title: "Settings", url: "/admin/settings", icon: Settings },
