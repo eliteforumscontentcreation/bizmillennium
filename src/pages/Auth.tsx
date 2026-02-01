@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,15 +33,25 @@ export default function Auth() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  const { signIn, signUp, user, loading } = useAuth();
+  const { signIn, signUp, user, loading, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+
+  const getRedirectPath = (from: unknown) => {
+    if (typeof from === "string" && from.startsWith("/") && !from.startsWith("//")) {
+      if (from.startsWith("/admin")) return isAdmin ? from : "/";
+      return from;
+    }
+    return isAdmin ? "/admin" : "/";
+  };
 
   useEffect(() => {
     if (!loading && user) {
-      navigate("/");
+      const from = (location.state as { from?: unknown } | null)?.from;
+      navigate(getRedirectPath(from), { replace: true });
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, isAdmin, location.state, navigate]);
 
   const validateForm = () => {
     try {
@@ -102,7 +112,7 @@ export default function Auth() {
             title: "Welcome back!",
             description: "You have successfully logged in.",
           });
-          navigate("/");
+          // Navigation happens via the effect above once auth + role are resolved.
         }
       } else {
         const { error } = await signUp(email, password, fullName);
