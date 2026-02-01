@@ -55,7 +55,6 @@ export function HeroSection() {
           {/* Main Title - Purple with Typewriter Effect */}
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-primary">
             {displayedText}
-            <span className={`inline-block w-[3px] h-[1em] bg-primary ml-1 align-middle ${isComplete ? 'animate-pulse' : 'animate-[blink_0.7s_step-end_infinite]'}`} />
           </h1>
           
           {/* Subtitle */}
