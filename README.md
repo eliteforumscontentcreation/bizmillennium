@@ -1,73 +1,219 @@
-# Welcome to your Lovable project
+# Biz Millennium
 
-## Project info
+A modern, full-featured event management and corporate website built with React, TypeScript, and Supabase.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Features
 
-## How can I edit this code?
+- **Event Management** - Create and manage conferences, roundtables, and in-house events
+- **Blog System** - Full CMS with categories, SEO, and rich content
+- **Career Portal** - Job listings with application forms
+- **Gallery** - Image gallery with categories and events
+- **Testimonials** - Customer testimonials showcase
+- **Partners & Brands** - Partner and brand logo management
+- **Dynamic Pages** - CMS-powered dynamic pages
+- **Admin Dashboard** - Full admin panel for content management
+- **Authentication** - Secure user authentication with role-based access
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
+- **Frontend**: React 18, TypeScript, Vite
+- **Styling**: Tailwind CSS, shadcn/ui
+- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **Routing**: React Router v6
+- **State Management**: TanStack Query
+- **Forms**: React Hook Form + Zod
+- **Icons**: Lucide React
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 📦 Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+- Node.js 18+ or Bun
+- npm, yarn, or bun package manager
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Steps
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. **Clone the repository**
+   ```bash
+   git clone <YOUR_GIT_URL>
+   cd <YOUR_PROJECT_NAME>
+   ```
 
-Follow these steps:
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   bun install
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+3. **Start development server**
+   ```bash
+   npm run dev
+   # or
+   bun run dev
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+4. **Open in browser**
+   ```
+   http://localhost:5173
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 🗄️ Database Setup
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+This project uses **Lovable Cloud** which provides an integrated Supabase backend. The database schema is automatically managed through migrations.
+
+For detailed setup instructions, see [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
+
+### Quick Start
+
+The database includes:
+- User authentication with profiles
+- Role-based access control (admin, moderator, user)
+- Content tables with Row-Level Security
+- Automatic triggers for new user setup
+
+### Making a User Admin
+
+```sql
+INSERT INTO public.user_roles (user_id, role)
+VALUES ('user-uuid', 'admin');
 ```
 
-**Edit a file directly in GitHub**
+## 📁 Project Structure
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+├── public/              # Static assets
+├── src/
+│   ├── assets/          # Images and media
+│   ├── components/
+│   │   ├── admin/       # Admin panel components
+│   │   ├── home/        # Homepage sections
+│   │   ├── layout/      # Layout components
+│   │   └── ui/          # shadcn/ui components
+│   ├── hooks/           # Custom React hooks
+│   ├── integrations/    # Supabase client & types
+│   ├── lib/             # Utility functions
+│   ├── pages/           # Page components
+│   │   └── admin/       # Admin pages
+│   └── test/            # Test files
+├── supabase/
+│   ├── functions/       # Edge functions
+│   └── migrations/      # Database migrations
+└── docs/                # Documentation
+```
 
-**Use GitHub Codespaces**
+## 🔐 Authentication
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+The app uses Supabase Auth with:
+- Email/password sign up and sign in
+- Email verification (enabled by default)
+- Role-based access control
+- Protected admin routes
 
-## What technologies are used for this project?
+### User Roles
 
-This project is built with:
+| Role | Access |
+|------|--------|
+| `user` | View public content |
+| `moderator` | Edit content (coming soon) |
+| `admin` | Full admin panel access |
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🎨 Customization
 
-## How can I deploy this project?
+### Theming
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Edit the CSS variables in `src/index.css`:
+```css
+:root {
+  --primary: 280 80% 55%;
+  --secondary: 220 14% 96%;
+  /* ... more variables */
+}
+```
 
-## Can I connect a custom domain to my Lovable project?
+### Components
 
-Yes, you can!
+All UI components use shadcn/ui and can be customized in `src/components/ui/`.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 📝 Environment Variables
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+The following variables are automatically configured:
+
+| Variable | Description |
+|----------|-------------|
+| `VITE_SUPABASE_URL` | Supabase project URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase anon key |
+| `VITE_SUPABASE_PROJECT_ID` | Project identifier |
+
+## 🧪 Testing
+
+```bash
+# Run tests
+npm run test
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+## 🚀 Deployment
+
+### Lovable
+
+Click **Share → Publish** in the Lovable editor.
+
+### Vercel
+
+The project includes a `vercel.json` for SPA routing:
+
+```bash
+vercel deploy
+```
+
+### Other Platforms
+
+Build the project and deploy the `dist` folder:
+
+```bash
+npm run build
+```
+
+## 📄 API Reference
+
+### Supabase Client
+
+```typescript
+import { supabase } from "@/integrations/supabase/client";
+
+// Fetch data
+const { data, error } = await supabase
+  .from('events')
+  .select('*')
+  .order('event_date', { ascending: true });
+
+// Insert data (requires auth)
+const { data, error } = await supabase
+  .from('blogs')
+  .insert([{ title: 'New Post', slug: 'new-post' }]);
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## 📜 License
+
+This project is proprietary software. All rights reserved.
+
+## 🔗 Links
+
+- **Live Site**: [bizmillennium.lovable.app](https://bizmillennium.lovable.app)
+- **Documentation**: [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md)
+- **Lovable Docs**: [docs.lovable.dev](https://docs.lovable.dev)
+
+---
+
+Built with ❤️ using [Lovable](https://lovable.dev)
