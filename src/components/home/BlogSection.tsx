@@ -69,9 +69,9 @@ export function BlogSection() {
                   alt={blog.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                {/* Blue overlay with "Leadership Update" text */}
-                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#1a56db] to-[#1a56db]/80 flex flex-col justify-center items-center p-4">
-                  <span className="text-white/40 text-6xl font-serif leading-none">"</span>
+                {/* Purple/Black gradient overlay with "Leadership Update" text */}
+                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#1a1a2e] via-[#6b21a8] to-[#1a1a2e]/80 flex flex-col justify-center items-center p-4">
+                  <span className="text-white/30 text-6xl font-serif leading-none">"</span>
                   <span className="text-white text-xl font-bold leading-tight text-center">
                     Leadership<br />Update
                   </span>
@@ -79,7 +79,7 @@ export function BlogSection() {
               </div>
               
               {/* Content */}
-              <div className="p-6 bg-white">
+              <div className="p-6 bg-card">
                 <h3 className="text-lg font-semibold text-foreground mb-4 line-clamp-3 group-hover:text-accent transition-colors">
                   {blog.title}
                 </h3>
