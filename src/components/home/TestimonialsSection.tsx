@@ -41,23 +41,32 @@ export function TestimonialsSection() {
   const displayTestimonials = testimonials.length > 0 ? testimonials : fallbackTestimonials;
 
   const nextSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % displayTestimonials.length);
+    setCurrentIndex((prev) => {
+      const length = displayTestimonials.length;
+      if (length <= 1) return prev;
+      return (prev + 1) % length;
+    });
   }, [displayTestimonials.length]);
 
   const prevSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + displayTestimonials.length) % displayTestimonials.length);
+    setCurrentIndex((prev) => {
+      const length = displayTestimonials.length;
+      if (length <= 1) return prev;
+      return (prev - 1 + length) % length;
+    });
   }, [displayTestimonials.length]);
 
   // Auto-scroll effect
   useEffect(() => {
-    if (displayTestimonials.length <= 1 || isPaused) return;
+    if (displayTestimonials.length <= 1) return;
+    if (isPaused) return;
 
-    const interval = setInterval(() => {
-      nextSlide();
+    const intervalId = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % displayTestimonials.length);
     }, 5000); // Change slide every 5 seconds
 
-    return () => clearInterval(interval);
-  }, [displayTestimonials.length, isPaused, nextSlide]);
+    return () => clearInterval(intervalId);
+  }, [displayTestimonials.length, isPaused]);
 
   if (displayTestimonials.length === 0) return null;
 
