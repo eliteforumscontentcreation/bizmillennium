@@ -62,20 +62,13 @@ export function BlogSection() {
               className="group bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 animate-fade-in-up"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              {/* Image with overlay */}
+              {/* Image */}
               <div className="relative aspect-[4/3] overflow-hidden">
                 <img
                   src={blog.featured_image || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800"}
                   alt={blog.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                {/* Purple/Black gradient overlay with "Leadership Update" text */}
-                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#1a1a2e] via-[#6b21a8] to-[#1a1a2e]/80 flex flex-col justify-center items-center p-4">
-                  <span className="text-white/30 text-6xl font-serif leading-none">"</span>
-                  <span className="text-white text-xl font-bold leading-tight text-center">
-                    Leadership<br />Update
-                  </span>
-                </div>
               </div>
               
               {/* Content */}
