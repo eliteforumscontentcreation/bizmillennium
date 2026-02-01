@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { AnimatedStat } from "./AnimatedStat";
 
 interface Statistic {
   id: string;
@@ -49,8 +50,8 @@ export function HeroSection() {
       
       <div className="container-wide relative z-10">
         <div className="text-center max-w-4xl mx-auto mb-12">
-          {/* Main Title - Purple Gradient */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-[#9333ea]">
+          {/* Main Title - Purple */}
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-primary">
             Biz Millennium
           </h1>
           
@@ -64,7 +65,7 @@ export function HeroSection() {
             <Button 
               size="lg" 
               variant="outline"
-              className="rounded-full px-8 bg-white border-foreground text-foreground hover:bg-foreground hover:text-background"
+              className="rounded-full px-8 bg-background border-foreground text-foreground hover:bg-foreground hover:text-background"
               asChild
             >
               <Link to="/contact">Partner with Us</Link>
@@ -90,20 +91,14 @@ export function HeroSection() {
           </div>
         </div>
         
-        {/* Stats Grid - 6 columns on desktop */}
+        {/* Stats Grid - 6 columns on desktop with animated counting */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-12">
           {displayStats.map((stat) => (
-            <div
+            <AnimatedStat
               key={stat.id}
-              className="bg-secondary/50 backdrop-blur-sm rounded-2xl p-6 text-center border border-border/50"
-            >
-              <div className="text-3xl md:text-4xl font-bold text-foreground mb-1">
-                {stat.value}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                {stat.label}
-              </div>
-            </div>
+              value={stat.value}
+              label={stat.label}
+            />
           ))}
         </div>
       </div>
