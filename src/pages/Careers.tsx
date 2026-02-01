@@ -39,7 +39,7 @@ const Careers = () => {
       {/* Hero */}
       <section className="py-16 md:py-24 bg-secondary">
         <div className="container-wide text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 hero-text-gradient">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
             Join Our Team
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

@@ -40,7 +40,7 @@ const Brands = () => {
       {/* Hero */}
       <section className="py-16 md:py-24 bg-secondary">
         <div className="container-wide text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-[hsl(280,80%,55%)] to-[hsl(320,80%,55%)] bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
             Our Brands
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
