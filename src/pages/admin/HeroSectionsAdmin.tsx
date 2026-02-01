@@ -307,14 +307,14 @@ export default function HeroSectionsAdmin() {
                   <div className="space-y-2">
                     <Label htmlFor="page_id">Page</Label>
                     <Select
-                      value={formData.page_id}
-                      onValueChange={(value) => setFormData({ ...formData, page_id: value })}
+                      value={formData.page_id || "homepage"}
+                      onValueChange={(value) => setFormData({ ...formData, page_id: value === "homepage" ? "" : value })}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Homepage (default)" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Homepage</SelectItem>
+                        <SelectItem value="homepage">Homepage</SelectItem>
                         {pages.map((page) => (
                           <SelectItem key={page.id} value={page.id}>
                             {page.title}
