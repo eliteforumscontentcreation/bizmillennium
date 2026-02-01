@@ -1,11 +1,10 @@
-import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
-export const CtaSection = forwardRef<HTMLElement>((_, ref) => {
+export function CtaSection() {
   return (
-    <section ref={ref} className="py-16 md:py-24 bg-background border-b border-border">
+    <section className="py-16 md:py-24 bg-background border-b border-border">
       <div className="container-wide">
         <div className="flex flex-col md:flex-row items-center justify-between gap-12">
           {/* Illustration */}
@@ -65,6 +64,4 @@ export const CtaSection = forwardRef<HTMLElement>((_, ref) => {
       </div>
     </section>
   );
-});
-
-CtaSection.displayName = "CtaSection";
+}
