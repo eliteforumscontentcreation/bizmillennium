@@ -1,57 +1,69 @@
 import { Layout } from "@/components/layout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, MessageSquare, Lightbulb, Target, ArrowRight } from "lucide-react";
+import { MessageCircle, Users, Lightbulb, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+interface Event {
+  id: string;
+  title: string;
+  featured_image: string | null;
+  event_date: string | null;
+  location: string | null;
+}
 
 interface PageContent {
   headline: string;
   subheadline: string;
   description: string;
-  benefits: { icon: string; title: string; description: string }[];
+  features: { title: string; description: string }[];
 }
 
 const defaultContent: PageContent = {
-  headline: "Executive Roundtables",
-  subheadline: "Intimate Discussions, Powerful Insights",
-  description: "Our executive roundtables provide an exclusive setting for senior leaders to engage in candid discussions, share experiences, and tackle industry challenges together.",
-  benefits: [
-    { icon: "users", title: "Peer-to-Peer Learning", description: "Engage with fellow executives facing similar challenges" },
-    { icon: "message", title: "Candid Discussions", description: "Off-the-record conversations in a trusted environment" },
-    { icon: "lightbulb", title: "Actionable Insights", description: "Leave with practical strategies you can implement immediately" },
-    { icon: "target", title: "Focused Topics", description: "Deep dives into specific industry challenges and opportunities" },
+  headline: "Roundtable Discussions",
+  subheadline: "Intimate Executive Forums",
+  description: "Participate in exclusive roundtable discussions where senior executives and industry leaders share insights, challenges, and solutions in a collaborative, confidential environment.",
+  features: [
+    { title: "Peer Learning", description: "Learn from fellow executives' experiences" },
+    { title: "Strategic Insights", description: "Gain perspectives on critical business issues" },
+    { title: "Confidential Setting", description: "Speak freely in a trusted environment" },
+    { title: "Action-Oriented", description: "Walk away with practical solutions" },
   ],
-};
-
-const iconMap: { [key: string]: any } = {
-  users: Users,
-  message: MessageSquare,
-  lightbulb: Lightbulb,
-  target: Target,
 };
 
 const Roundtable = () => {
   const [content, setContent] = useState<PageContent>(defaultContent);
+  const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    async function fetchContent() {
-      const { data } = await supabase
+    async function fetchData() {
+      const { data: pageData } = await supabase
         .from("pages")
         .select("content")
         .eq("slug", "roundtable")
         .eq("is_published", true)
         .single();
 
-      if (data?.content) {
-        setContent({ ...defaultContent, ...(data.content as object) });
+      if (pageData?.content) {
+        setContent({ ...defaultContent, ...(pageData.content as object) });
+      }
+
+      const { data: eventsData } = await supabase
+        .from("events")
+        .select("*, event_types!inner(name)")
+        .eq("event_types.name", "Roundtable")
+        .order("event_date", { ascending: false })
+        .limit(6);
+
+      if (eventsData) {
+        setEvents(eventsData as Event[]);
       }
     }
-    fetchContent();
+    fetchData();
   }, []);
 
   return (
     <Layout>
-      {/* Hero */}
       <section className="py-16 md:py-24 bg-secondary">
         <div className="container-wide text-center">
           <p className="text-sm uppercase tracking-wider text-accent font-semibold mb-4">
@@ -66,64 +78,71 @@ const Roundtable = () => {
         </div>
       </section>
 
-      {/* Benefits */}
-      <section className="py-16 md:py-24 bg-background">
+      <section className="py-16 bg-background">
         <div className="container-wide">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Why Join Our Roundtables?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {content.benefits.map((benefit, index) => {
-              const IconComponent = iconMap[benefit.icon] || Users;
-              return (
-                <div key={index} className="flex gap-4 p-6 rounded-2xl bg-secondary/30">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <IconComponent className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-2">{benefit.title}</h3>
-                    <p className="text-muted-foreground">{benefit.description}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {content.features.map((feature, index) => (
+              <div key={index} className="p-6 rounded-2xl bg-secondary/50 text-center">
+                <h3 className="font-semibold text-foreground mb-2">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {events.length > 0 && (
+        <section className="py-16 md:py-24 bg-background">
+          <div className="container-wide">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Upcoming Roundtables
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {events.map((event) => (
+                <div
+                  key={event.id}
+                  className="rounded-2xl overflow-hidden bg-card border border-border hover:shadow-lg transition-shadow"
+                >
+                  {event.featured_image && (
+                    <div className="aspect-video overflow-hidden">
+                      <img
+                        src={event.featured_image}
+                        alt={event.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-foreground mb-2">{event.title}</h3>
+                    {event.event_date && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                        <MessageCircle className="h-4 w-4" />
+                        {new Date(event.event_date).toLocaleDateString()}
+                      </div>
+                    )}
+                    {event.location && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Users className="h-4 w-4" />
+                        {event.location}
+                      </div>
+                    )}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Format Section */}
-      <section className="py-16 bg-card border-y border-border">
-        <div className="container-wide">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">The Roundtable Format</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-              <div className="p-6">
-                <div className="text-4xl font-bold text-accent mb-2">15-20</div>
-                <p className="text-muted-foreground">Senior Executives</p>
-              </div>
-              <div className="p-6">
-                <div className="text-4xl font-bold text-accent mb-2">3-4</div>
-                <p className="text-muted-foreground">Hours of Discussion</p>
-              </div>
-              <div className="p-6">
-                <div className="text-4xl font-bold text-accent mb-2">100%</div>
-                <p className="text-muted-foreground">Confidential</p>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* CTA */}
       <section className="py-16 bg-primary text-primary-foreground">
         <div className="container-wide text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Request an Invitation</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Join the Conversation</h2>
           <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto mb-8">
-            Our roundtables are invitation-only. Contact us to learn about upcoming sessions.
+            Request an invitation to our exclusive executive roundtable discussions.
           </p>
           <Button size="lg" variant="secondary" asChild>
             <a href="/contact">
-              Get in Touch <ArrowRight className="ml-2 h-4 w-4" />
+              Request Invitation <ArrowRight className="ml-2 h-4 w-4" />
             </a>
           </Button>
         </div>

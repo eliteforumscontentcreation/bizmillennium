@@ -1,57 +1,69 @@
 import { Layout } from "@/components/layout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Building2, Settings, Users, Sparkles, ArrowRight } from "lucide-react";
+import { Building2, Users, Lightbulb, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+interface Event {
+  id: string;
+  title: string;
+  featured_image: string | null;
+  event_date: string | null;
+  location: string | null;
+}
 
 interface PageContent {
   headline: string;
   subheadline: string;
   description: string;
-  services: { icon: string; title: string; description: string }[];
+  features: { title: string; description: string }[];
 }
 
 const defaultContent: PageContent = {
   headline: "In-House Events",
-  subheadline: "Tailored Corporate Solutions",
-  description: "We bring our expertise directly to your organization. Our in-house event solutions are customized to meet your specific objectives, culture, and audience.",
-  services: [
-    { icon: "building", title: "Corporate Training", description: "Skill development programs tailored to your team" },
-    { icon: "settings", title: "Custom Workshops", description: "Interactive sessions designed for your goals" },
-    { icon: "users", title: "Team Building", description: "Strengthen collaboration and company culture" },
-    { icon: "sparkles", title: "Leadership Retreats", description: "Strategic planning and executive development" },
+  subheadline: "Exclusive Corporate Training",
+  description: "Bring world-class training and development directly to your organization with our customized in-house events, designed to meet your specific business needs and objectives.",
+  features: [
+    { title: "Customized Content", description: "Tailored programs for your organization" },
+    { title: "Expert Facilitators", description: "Industry-leading trainers and consultants" },
+    { title: "Flexible Scheduling", description: "Events designed around your calendar" },
+    { title: "Measurable Results", description: "Track progress and ROI effectively" },
   ],
-};
-
-const iconMap: { [key: string]: any } = {
-  building: Building2,
-  settings: Settings,
-  users: Users,
-  sparkles: Sparkles,
 };
 
 const InHouse = () => {
   const [content, setContent] = useState<PageContent>(defaultContent);
+  const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    async function fetchContent() {
-      const { data } = await supabase
+    async function fetchData() {
+      const { data: pageData } = await supabase
         .from("pages")
         .select("content")
         .eq("slug", "in-house")
         .eq("is_published", true)
         .single();
 
-      if (data?.content) {
-        setContent({ ...defaultContent, ...(data.content as object) });
+      if (pageData?.content) {
+        setContent({ ...defaultContent, ...(pageData.content as object) });
+      }
+
+      const { data: eventsData } = await supabase
+        .from("events")
+        .select("*, event_types!inner(name)")
+        .eq("event_types.name", "In-House")
+        .order("event_date", { ascending: false })
+        .limit(6);
+
+      if (eventsData) {
+        setEvents(eventsData as Event[]);
       }
     }
-    fetchContent();
+    fetchData();
   }, []);
 
   return (
     <Layout>
-      {/* Hero */}
       <section className="py-16 md:py-24 bg-secondary">
         <div className="container-wide text-center">
           <p className="text-sm uppercase tracking-wider text-accent font-semibold mb-4">
@@ -66,62 +78,71 @@ const InHouse = () => {
         </div>
       </section>
 
-      {/* Services */}
-      <section className="py-16 md:py-24 bg-background">
+      <section className="py-16 bg-background">
         <div className="container-wide">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Our In-House Services
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {content.services.map((service, index) => {
-              const IconComponent = iconMap[service.icon] || Building2;
-              return (
-                <div key={index} className="flex gap-4 p-6 rounded-2xl bg-secondary/30 hover:bg-secondary/50 transition-colors">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <IconComponent className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-2">{service.title}</h3>
-                    <p className="text-muted-foreground">{service.description}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Process */}
-      <section className="py-16 bg-card border-y border-border">
-        <div className="container-wide">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Our Process</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              { step: "01", title: "Discovery", description: "Understanding your needs and objectives" },
-              { step: "02", title: "Design", description: "Creating a tailored event program" },
-              { step: "03", title: "Deliver", description: "Executing with precision and excellence" },
-              { step: "04", title: "Debrief", description: "Measuring impact and gathering feedback" },
-            ].map((item, index) => (
-              <div key={index} className="text-center">
-                <div className="text-4xl font-bold text-accent mb-4">{item.step}</div>
-                <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {content.features.map((feature, index) => (
+              <div key={index} className="p-6 rounded-2xl bg-secondary/50 text-center">
+                <h3 className="font-semibold text-foreground mb-2">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">{feature.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
+      {events.length > 0 && (
+        <section className="py-16 md:py-24 bg-background">
+          <div className="container-wide">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              Recent In-House Programs
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {events.map((event) => (
+                <div
+                  key={event.id}
+                  className="rounded-2xl overflow-hidden bg-card border border-border hover:shadow-lg transition-shadow"
+                >
+                  {event.featured_image && (
+                    <div className="aspect-video overflow-hidden">
+                      <img
+                        src={event.featured_image}
+                        alt={event.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-foreground mb-2">{event.title}</h3>
+                    {event.event_date && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                        <Building2 className="h-4 w-4" />
+                        {new Date(event.event_date).toLocaleDateString()}
+                      </div>
+                    )}
+                    {event.location && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Users className="h-4 w-4" />
+                        {event.location}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="py-16 bg-primary text-primary-foreground">
         <div className="container-wide text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Transform Your Team?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Transform Your Team</h2>
           <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto mb-8">
-            Let's discuss how we can create an impactful in-house event for your organization.
+            Contact us to discuss customized in-house training solutions for your organization.
           </p>
           <Button size="lg" variant="secondary" asChild>
             <a href="/contact">
-              Schedule a Consultation <ArrowRight className="ml-2 h-4 w-4" />
+              Get Started <ArrowRight className="ml-2 h-4 w-4" />
             </a>
           </Button>
         </div>

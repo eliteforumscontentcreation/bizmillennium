@@ -1,9 +1,16 @@
 import { Layout } from "@/components/layout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, MapPin, Users, ArrowRight } from "lucide-react";
+import { Calendar, MapPin, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+
+interface Event {
+  id: string;
+  title: string;
+  featured_image: string | null;
+  event_date: string | null;
+  location: string | null;
+}
 
 interface PageContent {
   headline: string;
@@ -26,7 +33,7 @@ const defaultContent: PageContent = {
 
 const Conferences = () => {
   const [content, setContent] = useState<PageContent>(defaultContent);
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -51,7 +58,7 @@ const Conferences = () => {
         .limit(6);
 
       if (eventsData) {
-        setEvents(eventsData);
+        setEvents(eventsData as Event[]);
       }
     }
     fetchData();
