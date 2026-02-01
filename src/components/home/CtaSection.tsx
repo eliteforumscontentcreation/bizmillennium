@@ -6,7 +6,7 @@ export function CtaSection() {
   return (
     <section className="py-16 md:py-24 bg-background border-b border-border">
       <div className="container-wide">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+        <div className="flex flex-col items-center justify-center gap-12 text-center">
           {/* Illustration */}
           <div className="flex-shrink-0">
             <div className="relative">
@@ -45,7 +45,7 @@ export function CtaSection() {
           </div>
           
           {/* Content */}
-          <div className="text-center md:text-left flex-1">
+          <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
               Have Any Project In Mind?
             </h2>
