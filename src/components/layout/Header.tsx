@@ -175,7 +175,7 @@ export function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="secondary" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
+            <Button variant="secondary" asChild className="bg-white hover:bg-white/90 text-foreground">
               <Link to="/contact">Partner with Us</Link>
             </Button>
           </div>
