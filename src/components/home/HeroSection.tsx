@@ -4,6 +4,7 @@ import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AnimatedStat } from "./AnimatedStat";
+import { useTypewriter } from "@/hooks/useTypewriter";
 
 interface Statistic {
   id: string;
@@ -23,6 +24,7 @@ const fallbackStats = [
 
 export function HeroSection() {
   const [stats, setStats] = useState<Statistic[]>([]);
+  const { displayedText, isComplete } = useTypewriter("Biz Millennium", 120);
 
   useEffect(() => {
     async function fetchStats() {
@@ -50,9 +52,10 @@ export function HeroSection() {
       
       <div className="container-wide relative z-10">
         <div className="text-center max-w-4xl mx-auto mb-12">
-          {/* Main Title - Purple */}
+          {/* Main Title - Purple with Typewriter Effect */}
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-primary">
-            Biz Millennium
+            {displayedText}
+            <span className={`inline-block w-[3px] h-[1em] bg-primary ml-1 align-middle ${isComplete ? 'animate-pulse' : 'animate-[blink_0.7s_step-end_infinite]'}`} />
           </h1>
           
           {/* Subtitle */}
