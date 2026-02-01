@@ -1,5 +1,5 @@
+import { forwardRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Partner {
@@ -20,7 +20,7 @@ const fallbackPartnerLogos = [
   { id: "8", name: "Apple", logo_url: "https://bizmillennium.com/wp-content/uploads/2023/08/apple-Our-Partners.jpg", website_url: null },
 ];
 
-export function PartnersSection() {
+export const PartnersSection = forwardRef<HTMLElement>((_, ref) => {
   const [partners, setPartners] = useState<Partner[]>([]);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export function PartnersSection() {
   const duplicatedPartners = [...displayPartners, ...displayPartners];
 
   return (
-    <section className="py-12 bg-background overflow-hidden">
+    <section ref={ref} className="py-12 bg-background overflow-hidden">
       <div className="container-wide">
         {/* Header */}
         <div className="flex items-center gap-4 mb-10">
@@ -62,9 +62,8 @@ export function PartnersSection() {
       {/* Infinite Scrolling Carousel */}
       <div className="relative overflow-hidden">
         <div 
-          className="flex"
+          className="partner-slider flex"
           style={{
-            animation: 'marquee 30s linear infinite',
             width: 'max-content'
           }}
         >
@@ -94,4 +93,6 @@ export function PartnersSection() {
       </div>
     </section>
   );
-}
+});
+
+PartnersSection.displayName = "PartnersSection";
