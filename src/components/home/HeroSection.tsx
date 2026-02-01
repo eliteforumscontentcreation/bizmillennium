@@ -50,7 +50,7 @@ export function HeroSection() {
       <div className="container-wide relative z-10">
         <div className="text-center max-w-4xl mx-auto mb-12">
           {/* Main Title - Purple Gradient */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-[hsl(280,80%,55%)] to-[hsl(320,80%,55%)] bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-[#9333ea]">
             Biz Millennium
           </h1>
           
