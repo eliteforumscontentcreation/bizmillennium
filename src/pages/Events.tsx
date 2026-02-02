@@ -23,18 +23,28 @@ interface Event {
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchEvents() {
-      const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .order("event_date", { ascending: true });
+      try {
+        const { data, error } = await supabase
+          .from("events")
+          .select("*")
+          .order("event_date", { ascending: false });
 
-      if (!error && data) {
-        setEvents(data);
+        if (error) {
+          console.error("Error fetching events:", error);
+          setError(error.message);
+        } else if (data) {
+          setEvents(data);
+        }
+      } catch (err) {
+        console.error("Unexpected error:", err);
+        setError("An unexpected error occurred while loading events");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchEvents();
   }, []);
@@ -123,43 +133,54 @@ const Events = () => {
       {/* Events */}
       <section className="py-16 md:py-24 bg-background">
         <div className="container-wide">
-          <Tabs defaultValue="upcoming" className="w-full">
-            <TabsList className="mb-8">
-              <TabsTrigger value="upcoming">Upcoming Events ({upcomingEvents.length})</TabsTrigger>
-              <TabsTrigger value="past">Past Events ({pastEvents.length})</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="upcoming">
-              {upcomingEvents.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {upcomingEvents.map((event) => (
-                    <EventCard key={event.id} event={event} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">No upcoming events at the moment.</p>
-                  <Button className="mt-4" asChild>
-                    <Link to="/contact">Contact us for custom events</Link>
-                  </Button>
-                </div>
-              )}
-            </TabsContent>
-            
-            <TabsContent value="past">
-              {pastEvents.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {pastEvents.map((event) => (
-                    <EventCard key={event.id} event={event} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">No past events to display.</p>
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-destructive mb-4">Error loading events: {error}</p>
+              <Button onClick={() => window.location.reload()}>Retry</Button>
+            </div>
+          ) : (
+            <Tabs defaultValue="upcoming" className="w-full">
+              <TabsList className="mb-8">
+                <TabsTrigger value="upcoming">Upcoming Events ({upcomingEvents.length})</TabsTrigger>
+                <TabsTrigger value="past">Past Events ({pastEvents.length})</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="upcoming">
+                {upcomingEvents.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {upcomingEvents.map((event) => (
+                      <EventCard key={event.id} event={event} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">No upcoming events at the moment.</p>
+                    <Button className="mt-4" asChild>
+                      <Link to="/contact">Contact us for custom events</Link>
+                    </Button>
+                  </div>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="past">
+                {pastEvents.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {pastEvents.map((event) => (
+                      <EventCard key={event.id} event={event} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">No past events to display.</p>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          )}
         </div>
       </section>
     </Layout>

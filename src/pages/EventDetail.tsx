@@ -4,13 +4,14 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, MapPin, ExternalLink, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Json } from "@/integrations/supabase/types";
 
 interface Event {
   id: string;
   title: string;
   slug: string;
   description: string | null;
-  content: any;
+  content: Json | null;
   featured_image: string | null;
   event_date: string | null;
   end_date: string | null;
@@ -24,21 +25,31 @@ const EventDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchEvent() {
       if (!slug) return;
 
-      const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .eq("slug", slug)
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from("events")
+          .select("*")
+          .eq("slug", slug)
+          .single();
 
-      if (!error && data) {
-        setEvent(data);
+        if (error) {
+          console.error("Error fetching event:", error);
+          setError(error.message);
+        } else if (data) {
+          setEvent(data);
+        }
+      } catch (err) {
+        console.error("Unexpected error:", err);
+        setError("An unexpected error occurred");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchEvent();
   }, [slug]);
@@ -49,6 +60,25 @@ const EventDetail = () => {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <section className="py-16 md:py-24 bg-background">
+          <div className="container-wide text-center">
+            <h1 className="text-3xl font-bold mb-4">Error Loading Event</h1>
+            <p className="text-muted-foreground mb-8">{error}</p>
+            <Button asChild>
+              <Link to="/events">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Events
+              </Link>
+            </Button>
+          </div>
+        </section>
       </Layout>
     );
   }
