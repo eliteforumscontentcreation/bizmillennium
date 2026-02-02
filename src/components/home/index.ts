@@ -1,7 +1,7 @@
 export { HeroSection } from "./HeroSection";
-export { StatsSection } from "./StatsSection";
 export { PartnersSection } from "./PartnersSection";
 export { EventTypesSection } from "./EventTypesSection";
+export { EventsSection } from "./EventsSection";
 export { ExpertiseSection } from "./ExpertiseSection";
 export { DomainsSection } from "./DomainsSection";
 export { TestimonialsSection } from "./TestimonialsSection";

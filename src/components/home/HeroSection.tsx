@@ -4,7 +4,7 @@ import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AnimatedStat } from "./AnimatedStat";
-import { useTypewriter } from "@/hooks/useTypewriter";
+import { useLoopingTypewriter } from "@/hooks/useTypewriter";
 
 interface Statistic {
   id: string;
@@ -24,7 +24,11 @@ const fallbackStats = [
 
 export function HeroSection() {
   const [stats, setStats] = useState<Statistic[]>([]);
-  const { displayedText, isComplete } = useTypewriter("Biz Millennium", 120);
+  const taglineText = useLoopingTypewriter(
+    "Unleashing Tomorrow's Business Solutions, Today. Explore a World Where Innovation Meets Commerce at Biz Millennium.",
+    80,
+    3000
+  );
 
   useEffect(() => {
     async function fetchStats() {
@@ -52,14 +56,15 @@ export function HeroSection() {
       
       <div className="container-wide relative z-10">
         <div className="text-center max-w-4xl mx-auto mb-12">
-          {/* Main Title - Purple with Typewriter Effect */}
+          {/* Main Title - Static (No Typing Effect) */}
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-primary">
-            {displayedText}
+            Biz Millennium
           </h1>
           
-          {/* Subtitle */}
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Unleashing Tomorrow's Business Solutions, Today. Explore a World Where Innovation Meets Commerce at Biz Millennium.
+          {/* Subtitle with Looping Typewriter Effect */}
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto min-h-[4rem] flex items-center justify-center">
+            {taglineText}
+            <span className="inline-block w-0.5 h-6 bg-muted-foreground ml-1 animate-pulse"></span>
           </p>
           
           {/* CTA Buttons */}

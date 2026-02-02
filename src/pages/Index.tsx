@@ -3,6 +3,7 @@ import {
   HeroSection,
   PartnersSection,
   EventTypesSection,
+  EventsSection,
   ExpertiseSection,
   DomainsSection,
   TestimonialsSection,
@@ -17,6 +18,7 @@ const Index = () => {
       <HeroSection />
       <PartnersSection />
       <EventTypesSection />
+      <EventsSection />
       <ExpertiseSection />
       <DomainsSection />
       <TestimonialsSection />
