@@ -30,8 +30,6 @@ export function Header() {
   const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) {
@@ -45,39 +43,6 @@ export function Header() {
       setAboutDropdownOpen(false);
     }, 150);
   };
-
-  const scrollToEvents = (e: React.MouseEvent) => {
-    e.preventDefault();
-    
-    // If not on homepage, navigate to homepage first
-    if (location.pathname !== '/') {
-      navigate('/', { state: { scrollToEvents: true } });
-    } else {
-      // Already on homepage, scroll to events
-      const eventsSection = document.getElementById('events-section');
-      if (eventsSection) {
-        eventsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
-    
-    // Close mobile menu if open
-    setIsOpen(false);
-  };
-
-  useEffect(() => {
-    // Handle scroll after navigation from other pages
-    if (location.state?.scrollToEvents) {
-      setTimeout(() => {
-        const eventsSection = document.getElementById('events-section');
-        if (eventsSection) {
-          eventsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-      
-      // Clear the state
-      window.history.replaceState({}, document.title);
-    }
-  }, [location]);
 
   useEffect(() => {
     return () => {
@@ -192,12 +157,12 @@ export function Header() {
               )}
             </div>
 
-            <button
-              onClick={scrollToEvents}
+            <Link
+              to="/events"
               className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
             >
               Events
-            </button>
+            </Link>
             <Link
               to="/contact"
               className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
@@ -280,12 +245,13 @@ export function Header() {
                 </Collapsible>
 
                 <div className="border-t border-border pt-4 space-y-2">
-                  <button
-                    onClick={scrollToEvents}
-                    className="block w-full text-left py-2 text-lg font-medium text-foreground hover:text-accent transition-colors"
+                  <Link
+                    to="/events"
+                    onClick={() => setIsOpen(false)}
+                    className="block py-2 text-lg font-medium text-foreground hover:text-accent transition-colors"
                   >
                     Events
-                  </button>
+                  </Link>
                   <Link
                     to="/contact"
                     onClick={() => setIsOpen(false)}
