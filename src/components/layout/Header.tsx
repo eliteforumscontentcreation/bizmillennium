@@ -144,7 +144,7 @@ export function Header() {
                         })}
                       </div>
                       <Link
-                        to="/events"
+                        to="/services"
                         className="flex items-center gap-2 mt-4 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                         onClick={() => setAboutDropdownOpen(false)}
                       >
@@ -234,6 +234,14 @@ export function Header() {
                           </Link>
                         );
                       })}
+                      <Link
+                        to="/services"
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center gap-2 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        Explore all Services
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
                     </div>
                   </CollapsibleContent>
                 </Collapsible>

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Events from "./pages/Events";
+import EventDetail from "./pages/EventDetail";
 import Blog from "./pages/Blog";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
@@ -15,6 +16,7 @@ import Auth from "./pages/Auth";
 import Company from "./pages/Company";
 import Brands from "./pages/Brands";
 import Partners from "./pages/Partners";
+import Services from "./pages/Services";
 import Conferences from "./pages/Conferences";
 import Roundtable from "./pages/Roundtable";
 import InHouse from "./pages/InHouse";
@@ -58,11 +60,13 @@ const App = () => (
             <Route path="/company" element={<Company />} />
             <Route path="/brands" element={<Brands />} />
             <Route path="/partners" element={<Partners />} />
+            <Route path="/services" element={<Services />} />
             <Route path="/conferences" element={<Conferences />} />
             <Route path="/roundtable" element={<Roundtable />} />
             <Route path="/in-house" element={<InHouse />} />
             <Route path="/data-generation" element={<DataGeneration />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/events/:slug" element={<EventDetail />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/gallery" element={<Gallery />} />

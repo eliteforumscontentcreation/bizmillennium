@@ -27,9 +27,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Image } from "lucide-react";
+import { Plus, Pencil, Trash2, Image, Upload } from "lucide-react";
 
 interface GalleryItem {
   id: string;
@@ -53,6 +54,7 @@ export default function GalleryAdmin() {
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
+  const [selectedEventFilter, setSelectedEventFilter] = useState<string>("all");
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -101,6 +103,15 @@ export default function GalleryAdmin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.event_id) {
+      toast({
+        title: "Error",
+        description: "Please select an event for this photo",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const submitData = {
       ...formData,
@@ -187,59 +198,56 @@ export default function GalleryAdmin() {
   };
 
   const getEventTitle = (eventId: string | null) => {
-    if (!eventId) return "-";
+    if (!eventId) return "No Event";
     const event = events.find(e => e.id === eventId);
-    return event?.title || "-";
+    return event?.title || "Unknown Event";
   };
+
+  const filteredItems = selectedEventFilter === "all" 
+    ? items 
+    : items.filter(item => item.event_id === selectedEventFilter);
+
+  const itemsByEvent = events.map(event => ({
+    event,
+    items: items.filter(item => item.event_id === event.id)
+  }));
 
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Gallery</h2>
-            <p className="text-muted-foreground">Manage gallery images and link them to events</p>
+            <h2 className="text-2xl font-bold text-foreground">Gallery Management</h2>
+            <p className="text-muted-foreground">Create events and add photos to build your event gallery</p>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={() => resetForm()}>
                 <Plus className="h-4 w-4 mr-2" />
-                Add Image
+                Add Photo
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
                 <DialogTitle>
-                  {editingItem ? "Edit Image" : "Add Image"}
+                  {editingItem ? "Edit Photo" : "Add Photo to Event"}
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="image_url">Image URL</Label>
-                  <Input
-                    id="image_url"
-                    value={formData.image_url}
-                    onChange={(e) =>
-                      setFormData({ ...formData, image_url: e.target.value })
+                  <Label htmlFor="event_id">Select Event *</Label>
+                  <Select
+                    value={formData.event_id || ""}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, event_id: value })
                     }
                     required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="event_id">Event (for gallery tabs)</Label>
-                  <Select
-                    value={formData.event_id || "none"}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, event_id: value === "none" ? "" : value })
-                    }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select an event" />
+                      <SelectValue placeholder="Choose an event" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">No Event</SelectItem>
                       {events.map((event) => (
                         <SelectItem key={event.id} value={event.id}>
                           {event.title}
@@ -247,16 +255,21 @@ export default function GalleryAdmin() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">
+                    First create an event in Events admin, then add photos here
+                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="alt_text">Alt Text</Label>
+                  <Label htmlFor="image_url">Image URL *</Label>
                   <Input
-                    id="alt_text"
-                    value={formData.alt_text}
+                    id="image_url"
+                    value={formData.image_url}
                     onChange={(e) =>
-                      setFormData({ ...formData, alt_text: e.target.value })
+                      setFormData({ ...formData, image_url: e.target.value })
                     }
+                    placeholder="/images/photo1770018880.jpg"
+                    required
                   />
                 </div>
 
@@ -268,6 +281,19 @@ export default function GalleryAdmin() {
                     onChange={(e) =>
                       setFormData({ ...formData, caption: e.target.value })
                     }
+                    placeholder="Photo description"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="alt_text">Alt Text</Label>
+                  <Input
+                    id="alt_text"
+                    value={formData.alt_text}
+                    onChange={(e) =>
+                      setFormData({ ...formData, alt_text: e.target.value })
+                    }
+                    placeholder="Accessibility description"
                   />
                 </div>
 
@@ -280,6 +306,7 @@ export default function GalleryAdmin() {
                       onChange={(e) =>
                         setFormData({ ...formData, category: e.target.value })
                       }
+                      placeholder="e.g., Networking"
                     />
                   </div>
                   <div className="space-y-2">
@@ -319,77 +346,94 @@ export default function GalleryAdmin() {
           </Dialog>
         </div>
 
-        <Card>
-          <CardContent className="p-0">
-            {loading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : items.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-                <Image className="h-12 w-12 mb-4" />
-                <p>No gallery items found</p>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Preview</TableHead>
-                    <TableHead>Caption</TableHead>
-                    <TableHead>Event</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="w-[100px]">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {items.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>
-                        <img
-                          src={item.image_url}
-                          alt={item.alt_text || "Gallery image"}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                      </TableCell>
-                      <TableCell>{item.caption || "-"}</TableCell>
-                      <TableCell>{getEventTitle(item.event_id)}</TableCell>
-                      <TableCell>
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs ${
-                            item.is_active
-                              ? "bg-green-100 text-green-700"
-                              : "bg-muted text-muted-foreground"
-                          }`}
-                        >
-                          {item.is_active ? "Active" : "Inactive"}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEdit(item)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDelete(item.id)}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+        <Tabs value={selectedEventFilter} onValueChange={setSelectedEventFilter}>
+          <TabsList className="mb-4">
+            <TabsTrigger value="all">All Photos ({items.length})</TabsTrigger>
+            {events.slice(0, 5).map(event => {
+              const count = items.filter(item => item.event_id === event.id).length;
+              return (
+                <TabsTrigger key={event.id} value={event.id}>
+                  {event.title} ({count})
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
+
+          <Card>
+            <CardContent className="p-0">
+              {loading ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : filteredItems.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+                  <Image className="h-12 w-12 mb-4" />
+                  <p>No gallery items found</p>
+                  <p className="text-sm mt-2">Create an event first, then add photos to it</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Preview</TableHead>
+                      <TableHead>Caption</TableHead>
+                      <TableHead>Event</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="w-[100px]">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredItems.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell>
+                          <img
+                            src={item.image_url}
+                            alt={item.alt_text || "Gallery image"}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                        </TableCell>
+                        <TableCell>{item.caption || "-"}</TableCell>
+                        <TableCell className="font-medium">{getEventTitle(item.event_id)}</TableCell>
+                        <TableCell>{item.category || "-"}</TableCell>
+                        <TableCell>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs ${
+                              item.is_active
+                                ? "bg-green-100 text-green-700"
+                                : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {item.is_active ? "Active" : "Inactive"}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEdit(item)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDelete(item.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </Tabs>
       </div>
     </AdminLayout>
   );

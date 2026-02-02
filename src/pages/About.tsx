@@ -1,5 +1,7 @@
 import { Layout } from "@/components/layout";
-import { Check } from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import expertiseImage from "@/assets/expertise-image.jpg";
 
 const aboutPoints = [
@@ -58,7 +60,7 @@ const About = () => {
                 conferences, we tailor each event to meet the unique needs of our clients and attendees.
               </p>
               
-              <ul className="space-y-3">
+              <ul className="space-y-3 mb-8">
                 {aboutPoints.map((point, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="h-5 w-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -68,6 +70,13 @@ const About = () => {
                   </li>
                 ))}
               </ul>
+
+              <Button asChild size="lg" className="gap-2">
+                <Link to="/services">
+                  Explore Services
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
             </div>
           </div>
         </div>

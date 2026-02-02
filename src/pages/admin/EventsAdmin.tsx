@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Calendar } from "lucide-react";
+import { Plus, Pencil, Trash2, Calendar, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 
 interface Event {
@@ -37,6 +37,7 @@ interface Event {
   is_upcoming: boolean;
   is_featured: boolean;
   featured_image: string | null;
+  registration_url: string | null;
 }
 
 export default function EventsAdmin() {
@@ -56,6 +57,7 @@ export default function EventsAdmin() {
     is_upcoming: true,
     is_featured: false,
     featured_image: "",
+    registration_url: "",
   });
 
   useEffect(() => {
@@ -87,6 +89,7 @@ export default function EventsAdmin() {
       ...formData,
       slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, "-"),
       event_date: formData.event_date || null,
+      registration_url: formData.registration_url || null,
     };
 
     if (editingEvent) {
@@ -135,6 +138,7 @@ export default function EventsAdmin() {
       is_upcoming: event.is_upcoming,
       is_featured: event.is_featured,
       featured_image: event.featured_image || "",
+      registration_url: event.registration_url || "",
     });
     setIsDialogOpen(true);
   };
@@ -167,6 +171,7 @@ export default function EventsAdmin() {
       is_upcoming: true,
       is_featured: false,
       featured_image: "",
+      registration_url: "",
     });
     setEditingEvent(null);
     setIsDialogOpen(false);
@@ -178,7 +183,7 @@ export default function EventsAdmin() {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-bold text-foreground">Events</h2>
-            <p className="text-muted-foreground">Manage your events</p>
+            <p className="text-muted-foreground">Manage your events and registration links</p>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -197,7 +202,7 @@ export default function EventsAdmin() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="title">Title</Label>
+                    <Label htmlFor="title">Title *</Label>
                     <Input
                       id="title"
                       value={formData.title}
@@ -256,27 +261,42 @@ export default function EventsAdmin() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="venue">Venue</Label>
-                    <Input
-                      id="venue"
-                      value={formData.venue}
-                      onChange={(e) =>
-                        setFormData({ ...formData, venue: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="featured_image">Featured Image URL</Label>
-                    <Input
-                      id="featured_image"
-                      value={formData.featured_image}
-                      onChange={(e) =>
-                        setFormData({ ...formData, featured_image: e.target.value })
-                      }
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="venue">Venue</Label>
+                  <Input
+                    id="venue"
+                    value={formData.venue}
+                    onChange={(e) =>
+                      setFormData({ ...formData, venue: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="featured_image">Featured Image URL</Label>
+                  <Input
+                    id="featured_image"
+                    value={formData.featured_image}
+                    onChange={(e) =>
+                      setFormData({ ...formData, featured_image: e.target.value })
+                    }
+                    placeholder="/images/ImageUpload.jpg"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="registration_url">Registration URL</Label>
+                  <Input
+                    id="registration_url"
+                    value={formData.registration_url}
+                    onChange={(e) =>
+                      setFormData({ ...formData, registration_url: e.target.value })
+                    }
+                    placeholder="https://example.com/register"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    External link where users can register for this event
+                  </p>
                 </div>
 
                 <div className="flex gap-6">
@@ -333,6 +353,7 @@ export default function EventsAdmin() {
                     <TableHead>Title</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Location</TableHead>
+                    <TableHead>Registration</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="w-[100px]">Actions</TableHead>
                   </TableRow>
@@ -347,6 +368,21 @@ export default function EventsAdmin() {
                           : "TBD"}
                       </TableCell>
                       <TableCell>{event.location || "-"}</TableCell>
+                      <TableCell>
+                        {event.registration_url ? (
+                          <a
+                            href={event.registration_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-accent hover:underline"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            Link
+                          </a>
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
                       <TableCell>
                         <span
                           className={`px-2 py-1 rounded-full text-xs ${
