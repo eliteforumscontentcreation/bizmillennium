@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Settings, Globe, Mail, Share2, Image } from "lucide-react";
+import { Settings, Globe, Mail, Share2 } from "lucide-react";
 
 interface SiteSettings {
   id: string;
@@ -29,9 +29,28 @@ interface SiteSettings {
   global_seo_image: string | null;
 }
 
+const defaultSettings: Omit<SiteSettings, 'id'> = {
+  site_title: 'Biz Millennium',
+  site_tagline: 'Unleashing Tomorrow\'s Business Solutions, Today',
+  logo_url: null,
+  favicon_url: null,
+  contact_email: 'info@bizmillennium.com',
+  contact_phone: '+91 9876543210',
+  contact_address: 'Mumbai, India',
+  facebook_url: 'https://facebook.com/bizmillennium',
+  twitter_url: 'https://twitter.com/bizmillennium',
+  linkedin_url: 'https://linkedin.com/company/bizmillennium',
+  instagram_url: 'https://instagram.com/bizmillennium',
+  youtube_url: 'https://youtube.com/@bizmillennium',
+  global_seo_title: 'Biz Millennium - Business Events & Conferences',
+  global_seo_description: 'Leading provider of world-class business conferences, roundtables, and corporate training events.',
+  global_seo_image: null,
+};
+
 export default function SettingsAdmin() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [initializing, setInitializing] = useState(false);
   const [settings, setSettings] = useState<SiteSettings | null>(null);
 
   useEffect(() => {
@@ -39,19 +58,47 @@ export default function SettingsAdmin() {
   }, []);
 
   async function fetchSettings() {
-    const { data, error } = await supabase
-      .from("site_settings")
-      .select("*")
-      .limit(1)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
 
-    if (error && error.code !== "PGRST116") {
+      if (error) {
+        console.error("Error fetching settings:", error);
+        toast.error("Failed to load settings");
+      } else if (data) {
+        setSettings(data);
+      }
+    } catch (err) {
+      console.error("Error:", err);
       toast.error("Failed to load settings");
-      console.error(error);
-    } else if (data) {
-      setSettings(data);
     }
     setLoading(false);
+  }
+
+  async function initializeSettings() {
+    setInitializing(true);
+    try {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .insert(defaultSettings)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error initializing settings:", error);
+        toast.error("Failed to initialize settings: " + error.message);
+      } else if (data) {
+        setSettings(data);
+        toast.success("Settings initialized successfully");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      toast.error("Failed to initialize settings");
+    }
+    setInitializing(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -60,16 +107,21 @@ export default function SettingsAdmin() {
 
     setSaving(true);
 
-    const { error } = await supabase
-      .from("site_settings")
-      .update(settings)
-      .eq("id", settings.id);
+    try {
+      const { error } = await supabase
+        .from("site_settings")
+        .update(settings)
+        .eq("id", settings.id);
 
-    if (error) {
+      if (error) {
+        console.error("Error saving settings:", error);
+        toast.error("Failed to save settings: " + error.message);
+      } else {
+        toast.success("Settings saved successfully");
+      }
+    } catch (err) {
+      console.error("Error:", err);
       toast.error("Failed to save settings");
-      console.error(error);
-    } else {
-      toast.success("Settings saved successfully");
     }
     setSaving(false);
   }
@@ -87,11 +139,30 @@ export default function SettingsAdmin() {
   if (!settings) {
     return (
       <AdminLayout>
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-muted-foreground">No settings found. Please initialize site settings first.</p>
-          </CardContent>
-        </Card>
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">Site Settings</h2>
+            <p className="text-muted-foreground">Configure global site settings</p>
+          </div>
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center space-y-4">
+                <Settings className="h-12 w-12 mx-auto text-muted-foreground" />
+                <h3 className="text-lg font-semibold">No Settings Found</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Site settings have not been initialized yet. Click the button below to create default settings that you can then customize.
+                </p>
+                <Button 
+                  onClick={initializeSettings} 
+                  disabled={initializing}
+                  className="mt-4"
+                >
+                  {initializing ? "Initializing..." : "Initialize Settings"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </AdminLayout>
     );
   }
