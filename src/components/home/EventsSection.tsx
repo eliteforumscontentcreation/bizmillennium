@@ -43,7 +43,7 @@ export function EventsSection() {
 
   if (loading) {
     return (
-      <section className="py-16 md:py-24 bg-secondary">
+      <section id="events-section" className="py-16 md:py-24 bg-secondary scroll-mt-16">
         <div className="container-wide">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -126,7 +126,7 @@ export function EventsSection() {
   );
 
   return (
-    <section className="py-16 md:py-24 bg-secondary">
+    <section id="events-section" className="py-16 md:py-24 bg-secondary scroll-mt-16">
       <div className="container-wide">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">

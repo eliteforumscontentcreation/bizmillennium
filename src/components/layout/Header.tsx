@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, ChevronDown, ArrowRight, Building2, Briefcase, Users, Image, FileText, UserPlus, Mic2, UsersRound, Home, Database } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,8 @@ export function Header() {
   const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) {
@@ -43,6 +45,39 @@ export function Header() {
       setAboutDropdownOpen(false);
     }, 150);
   };
+
+  const scrollToEvents = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // If not on homepage, navigate to homepage first
+    if (location.pathname !== '/') {
+      navigate('/', { state: { scrollToEvents: true } });
+    } else {
+      // Already on homepage, scroll to events
+      const eventsSection = document.getElementById('events-section');
+      if (eventsSection) {
+        eventsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    
+    // Close mobile menu if open
+    setIsOpen(false);
+  };
+
+  useEffect(() => {
+    // Handle scroll after navigation from other pages
+    if (location.state?.scrollToEvents) {
+      setTimeout(() => {
+        const eventsSection = document.getElementById('events-section');
+        if (eventsSection) {
+          eventsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+      
+      // Clear the state
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   useEffect(() => {
     return () => {
@@ -157,14 +192,12 @@ export function Header() {
               )}
             </div>
 
-            <a
-              href="https://events.bizmillennium.com/"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={scrollToEvents}
               className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
             >
               Events
-            </a>
+            </button>
             <Link
               to="/contact"
               className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
@@ -247,15 +280,12 @@ export function Header() {
                 </Collapsible>
 
                 <div className="border-t border-border pt-4 space-y-2">
-                  <a
-                    href="https://events.bizmillennium.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setIsOpen(false)}
-                    className="block py-2 text-lg font-medium text-foreground hover:text-accent transition-colors"
+                  <button
+                    onClick={scrollToEvents}
+                    className="block w-full text-left py-2 text-lg font-medium text-foreground hover:text-accent transition-colors"
                   >
                     Events
-                  </a>
+                  </button>
                   <Link
                     to="/contact"
                     onClick={() => setIsOpen(false)}
