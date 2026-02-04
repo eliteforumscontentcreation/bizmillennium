@@ -1,0 +1,426 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Biz Millennium Design System */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    /* Brand Colors - Navy & Cyan Corporate Palette */
+    --background: 0 0% 100%;
+    --foreground: 220 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 15%;
+
+    /* Primary - Deep Navy Blue */
+    --primary: 220 65% 18%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Light Gray */
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 30% 15%;
+
+    /* Accent - Vibrant Cyan/Turquoise */
+    --accent: 190 85% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 220 65% 18%;
+
+    --radius: 0.5rem;
+
+    /* Custom Brand Extensions */
+    --brand-navy: 220 65% 18%;
+    --brand-navy-dark: 220 70% 12%;
+    --brand-cyan: 190 85% 50%;
+    --brand-cyan-light: 190 85% 60%;
+    --brand-gold: 45 90% 55%;
+    --brand-orange: 25 95% 53%;
+    --brand-gray-light: 220 20% 97%;
+    --brand-gray: 220 10% 60%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(220 65% 18%) 0%, hsl(220 70% 25%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(190 85% 50%) 0%, hsl(200 90% 45%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 20% 98%) 100%);
+    --gradient-stats: linear-gradient(180deg, hsl(220 14% 96%) 0%, hsl(220 20% 98%) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(220 30% 15% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(220 30% 15% / 0.1), 0 2px 4px -2px hsl(220 30% 15% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(220 30% 15% / 0.1), 0 4px 6px -4px hsl(220 30% 15% / 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(220 30% 15% / 0.1), 0 8px 10px -6px hsl(220 30% 15% / 0.1);
+    --shadow-card: 0 2px 8px hsl(220 30% 15% / 0.08);
+    --shadow-card-hover: 0 8px 25px hsl(220 30% 15% / 0.12);
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 220 65% 18%;
+  }
+
+  .dark {
+    --background: 220 30% 8%;
+    --foreground: 0 0% 95%;
+
+    --card: 220 30% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 220 30% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 190 85% 50%;
+    --primary-foreground: 220 30% 8%;
+
+    --secondary: 220 20% 18%;
+    --secondary-foreground: 0 0% 95%;
+
+    --accent: 190 85% 50%;
+    --accent-foreground: 220 30% 8%;
+
+    --muted: 220 20% 18%;
+    --muted-foreground: 220 10% 60%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 20%;
+    --input: 220 20% 20%;
+    --ring: 190 85% 50%;
+
+    --sidebar-background: 220 30% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 190 85% 50%;
+    --sidebar-primary-foreground: 220 30% 8%;
+    --sidebar-accent: 220 20% 18%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 220 20% 20%;
+    --sidebar-ring: 190 85% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Poppins', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  /* Hero Section Styles */
+  .hero-gradient {
+    background: linear-gradient(135deg, hsl(var(--brand-navy)) 0%, hsl(var(--brand-navy-dark)) 100%);
+  }
+
+  /* Purple to Cyan/Turquoise Gradient Text - Matching Reference Image Exactly */
+  .hero-text-gradient {
+    background: linear-gradient(90deg, #A855F7 0%, #8B5CF6 25%, #06B6D4 75%, #2DD4BF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Stats Card */
+  .stats-card {
+    @apply bg-secondary/80 backdrop-blur-sm rounded-xl p-6 text-center;
+    box-shadow: var(--shadow-card);
+    transition: all 0.3s ease;
+  }
+
+  .stats-card:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+
+  .stats-number {
+    @apply text-4xl md:text-5xl font-bold;
+    background: linear-gradient(135deg, hsl(var(--brand-navy)) 0%, hsl(var(--brand-cyan)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Card Hover Effects */
+  .card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  /* Section Styles */
+  .section-title {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold text-primary;
+  }
+
+  .section-subtitle {
+    @apply text-sm uppercase tracking-wider text-accent font-semibold;
+  }
+
+  /* Partner Logo Slider */
+  .partner-slider {
+    @apply flex gap-8 items-center;
+    animation: scroll 30s linear infinite;
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Marquee animation for partners */
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Domain Cards */
+  .domain-card {
+    @apply relative p-6 rounded-2xl bg-card overflow-hidden;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+  }
+
+  .domain-card:hover {
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-4px);
+  }
+
+  .domain-card::before {
+    content: '';
+    @apply absolute inset-0 opacity-0;
+    background: linear-gradient(135deg, hsl(var(--brand-cyan) / 0.1) 0%, hsl(var(--brand-navy) / 0.05) 100%);
+    transition: opacity 0.3s ease;
+  }
+
+  .domain-card:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Blog Card */
+  .blog-card {
+    @apply relative rounded-2xl overflow-hidden bg-card;
+    box-shadow: var(--shadow-card);
+    transition: all 0.3s ease;
+  }
+
+  .blog-card:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-4px);
+  }
+
+  /* Testimonial Card */
+  .testimonial-card {
+    @apply p-6 md:p-8 rounded-2xl bg-card border border-border;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Navigation Styles */
+  .nav-link {
+    @apply relative text-foreground/80 hover:text-foreground transition-colors duration-200;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all duration-300;
+  }
+
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+
+  /* Button Variants */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-200;
+  }
+
+  .btn-outline-white {
+    @apply border-2 border-white/30 text-foreground hover:bg-white hover:text-primary transition-all duration-200;
+  }
+
+  /* Event Badge */
+  .event-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .event-badge-upcoming {
+    @apply bg-accent/10 text-accent;
+  }
+
+  .event-badge-past {
+    @apply bg-muted text-muted-foreground;
+  }
+
+  /* Animated Underline */
+  .animated-underline {
+    @apply relative;
+  }
+
+  .animated-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-0.5 bg-accent scale-x-0 origin-left transition-transform duration-300;
+  }
+
+  .animated-underline:hover::after {
+    @apply scale-x-100;
+  }
+
+  /* Glass Effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-md;
+  }
+
+  /* Container */
+  .container-wide {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Hero Curved Card Section */
+  .hero-curved-card {
+    @apply relative bg-white;
+    border-radius: 2rem 2rem 0 0;
+    margin-top: -2rem;
+  }
+
+  .hero-curved-card::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: white;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  }
+}
+
+@layer utilities {
+  /* Custom Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.6s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.6s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Delay utilities */
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-400 { animation-delay: 400ms; }
+  .animation-delay-500 { animation-delay: 500ms; }
+}
