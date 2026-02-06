@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AnimatedStat } from "./AnimatedStat";
+import { useCyclingTypewriter } from "@/hooks/useCyclingTypewriter";
 
 interface Statistic {
   id: string;
@@ -22,6 +23,13 @@ const fallbackStats = [
 
 export function HeroSection() {
   const [stats, setStats] = useState<Statistic[]>([]);
+  const cyclingWords = [
+    "Conferences",
+    "Webinars",
+    "Awards",
+    "Data Intelligence",
+  ];
+  const cyclingText = useCyclingTypewriter(cyclingWords, 100, 50, 2000);
 
   useEffect(() => {
     async function fetchStats() {
@@ -49,22 +57,25 @@ export function HeroSection() {
         <div className="container-wide relative z-10">
           <div className="text-center max-w-4xl mx-auto mb-8 md:mb-12">
             {/* Main Title with Purple-Cyan Gradient */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 hero-text-gradient">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4 hero-text-gradient">
               Biz Millennium
             </h1>
 
-            {/* Static Tagline - matching reference image */}
-            <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 px-4 max-w-3xl mx-auto leading-relaxed">
-              Unleashing Tomorrow's Business Solutions, Today. Explore a World
-              Where Innovation Meets Commerce at Biz Millennium.
-            </p>
+            {/* Cycling Typewriter Effect - "for [word]" */}
+            <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 min-h-[2.5rem] md:min-h-[3.5rem] flex flex-wrap items-center justify-center gap-x-2">
+              <span className="text-black">for</span>
+              <span className="text-black whitespace-nowrap">
+                {cyclingText}
+                <span className="inline-block w-0.5 h-5 sm:h-6 md:h-8 bg-black ml-1 animate-pulse align-middle"></span>
+              </span>
+            </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-row items-center justify-center gap-3 mb-6 md:mb-8">
               <Button
                 size="lg"
                 variant="outline"
-                className="rounded-full px-5 md:px-8 text-sm md:text-base bg-white border-black text-black hover:bg-gray-100"
+                className="rounded-full px-5 md:px-8 text-sm md:text-base bg-white border-black text-black hover:bg-gray-100 hover:text-black active:text-black focus:text-black focus-visible:text-black"
                 asChild
               >
                 <Link to="/contact">Partner with Us</Link>
