@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AnimatedStat } from "./AnimatedStat";
-import { useCyclingTypewriter } from "@/hooks/useCyclingTypewriter";
 
 interface Statistic {
   id: string;
@@ -23,13 +22,6 @@ const fallbackStats = [
 
 export function HeroSection() {
   const [stats, setStats] = useState<Statistic[]>([]);
-  const cyclingWords = [
-    "Conferences",
-    "Webinars",
-    "Awards",
-    "Data Intelligence",
-  ];
-  const cyclingText = useCyclingTypewriter(cyclingWords, 100, 50, 2000);
 
   useEffect(() => {
     async function fetchStats() {
@@ -53,36 +45,33 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden">
       {/* White Content Area */}
-      <div className="bg-white pt-16 pb-16 md:pb-24">
+      <div className="bg-white pt-12 md:pt-16 pb-12 md:pb-20">
         <div className="container-wide relative z-10">
           <div className="text-center max-w-4xl mx-auto mb-8 md:mb-12">
             {/* Main Title with Purple-Cyan Gradient */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4 hero-text-gradient">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 hero-text-gradient">
               Biz Millennium
             </h1>
 
-            {/* Cycling Typewriter Effect - "For [word]" - Same size as main title */}
-            <div className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 md:mb-8 min-h-[2.5rem] md:min-h-[3.5rem] flex items-center justify-center">
-              <span className="text-black">for </span>
-              <span className="ml-2 text-black">
-                {cyclingText}
-                <span className="inline-block w-0.5 h-6 md:h-8 bg-black ml-1 animate-pulse"></span>
-              </span>
-            </div>
+            {/* Static Tagline - matching reference image */}
+            <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 px-4 max-w-3xl mx-auto leading-relaxed">
+              Unleashing Tomorrow's Business Solutions, Today. Explore a World
+              Where Innovation Meets Commerce at Biz Millennium.
+            </p>
 
-            {/* CTA Buttons - Black color */}
+            {/* CTA Buttons */}
             <div className="flex flex-row items-center justify-center gap-3 mb-6 md:mb-8">
               <Button
                 size="lg"
                 variant="outline"
-                className="rounded-full px-6 md:px-8 text-sm md:text-base bg-white border-black text-black hover:bg-gray-100"
+                className="rounded-full px-5 md:px-8 text-sm md:text-base bg-white border-black text-black hover:bg-gray-100"
                 asChild
               >
                 <Link to="/contact">Partner with Us</Link>
               </Button>
               <Button
                 size="lg"
-                className="rounded-full px-6 md:px-8 text-sm md:text-base bg-black text-white hover:bg-black/90"
+                className="rounded-full px-5 md:px-8 text-sm md:text-base bg-black text-white hover:bg-black/90"
                 asChild
               >
                 <a
@@ -105,8 +94,8 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Stats Grid - Black color with less rounded corners */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-8 md:mt-12">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mt-6 md:mt-10">
             {displayStats.map((stat) => (
               <AnimatedStat
                 key={stat.id}
