@@ -204,19 +204,6 @@ const EventDetail = () => {
       <section className="py-8 md:py-12 bg-background">
         <div className="container-wide">
           <div className="max-w-4xl mx-auto">
-            {/* Show Hero Image as main banner */}
-            {event.hero_image && (
-              <div className="mb-12 rounded-2xl overflow-hidden shadow-xl">
-                <div className="aspect-video w-full">
-                  <img
-                    src={event.hero_image}
-                    alt={event.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            )}
-
             {event.description && (
               <div className="prose prose-lg max-w-none mb-12">
                 <p className="text-xl text-muted-foreground leading-relaxed">
