@@ -63,7 +63,7 @@ export function HeroSection() {
 
             {/* Cycling Typewriter Effect - "For [word]" - Same size as main title */}
             <div className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 md:mb-8 min-h-[2.5rem] md:min-h-[3.5rem] flex items-center justify-center">
-              <span className="text-black">For </span>
+              <span className="text-black">for </span>
               <span className="ml-2 text-black">
                 {cyclingText}
                 <span className="inline-block w-0.5 h-6 md:h-8 bg-black ml-1 animate-pulse"></span>
