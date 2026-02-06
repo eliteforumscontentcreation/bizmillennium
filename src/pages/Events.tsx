@@ -38,6 +38,14 @@ const Events = () => {
           console.error("Error fetching events:", error);
           setError(error.message);
         } else if (data) {
+          console.log("Fetched events:", data);
+          console.log(
+            "Featured images:",
+            data.map((e) => ({
+              title: e.title,
+              featured_image: e.featured_image,
+            })),
+          );
           setEvents(data);
         }
       } catch (err) {
@@ -53,86 +61,94 @@ const Events = () => {
   const upcomingEvents = events.filter((e) => e.is_upcoming);
   const pastEvents = events.filter((e) => !e.is_upcoming);
 
-  const EventCard = ({ event }: { event: Event }) => (
-    <div className="blog-card group">
-      <Link to={`/events/${event.slug}`} className="block">
-        <div className="aspect-[16/10] overflow-hidden bg-muted">
-          <img
-            src={
-              event.featured_image ||
-              "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800"
-            }
-            alt={event.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        </div>
-      </Link>
-      <div className="p-6">
-        <span
-          className={`event-badge mb-3 ${event.is_upcoming ? "event-badge-upcoming" : "event-badge-past"}`}
-        >
-          {event.is_upcoming ? "Upcoming" : "Past Event"}
-        </span>
-        <Link to={`/events/${event.slug}`}>
-          <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-accent transition-colors">
-            {event.title}
-          </h3>
-        </Link>
-        {event.description && (
-          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-            {event.description}
-          </p>
-        )}
-        <div className="flex flex-col gap-2 text-sm text-muted-foreground mb-4">
-          {event.event_date && (
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              <span>
-                {new Date(event.event_date).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </span>
-            </div>
-          )}
-          {event.location && (
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              <span>{event.location}</span>
-            </div>
-          )}
-        </div>
+  const EventCard = ({ event }: { event: Event }) => {
+    const imageUrl =
+      event.featured_image ||
+      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800";
 
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            asChild
-            className="flex-1 bg-black text-white hover:bg-black/90 border-black"
+    return (
+      <div className="blog-card group">
+        <Link to={`/events/${event.slug}`} className="block">
+          <div className="aspect-[16/10] overflow-hidden bg-muted">
+            <img
+              src={imageUrl}
+              alt={event.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              onError={(e) => {
+                console.error("Image failed to load:", imageUrl);
+                (e.target as HTMLImageElement).src =
+                  "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800";
+              }}
+            />
+          </div>
+        </Link>
+        <div className="p-6">
+          <span
+            className={`event-badge mb-3 ${event.is_upcoming ? "event-badge-upcoming" : "event-badge-past"}`}
           >
-            <Link to={`/events/${event.slug}`}>View Details</Link>
-          </Button>
-          {event.registration_url && event.is_upcoming && (
+            {event.is_upcoming ? "Upcoming" : "Past Event"}
+          </span>
+          <Link to={`/events/${event.slug}`}>
+            <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-accent transition-colors">
+              {event.title}
+            </h3>
+          </Link>
+          {event.description && (
+            <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+              {event.description}
+            </p>
+          )}
+          <div className="flex flex-col gap-2 text-sm text-muted-foreground mb-4">
+            {event.event_date && (
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <span>
+                  {new Date(event.event_date).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
+              </div>
+            )}
+            {event.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                <span>{event.location}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-2">
             <Button
+              variant="outline"
               size="sm"
               asChild
-              className="flex-1 gap-1 bg-black text-white hover:bg-black/90"
+              className="flex-1 bg-black text-white hover:bg-black/90 border-black"
             >
-              <a
-                href={event.registration_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Register
-                <ExternalLink className="h-3 w-3" />
-              </a>
+              <Link to={`/events/${event.slug}`}>View Details</Link>
             </Button>
-          )}
+            {event.registration_url && event.is_upcoming && (
+              <Button
+                size="sm"
+                asChild
+                className="flex-1 gap-1 bg-black text-white hover:bg-black/90"
+              >
+                <a
+                  href={event.registration_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Register
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </Button>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <Layout>
