@@ -13,6 +13,7 @@ interface Event {
   description: string | null;
   content: Json | null;
   featured_image: string | null;
+  hero_image: string | null;
   event_date: string | null;
   end_date: string | null;
   location: string | null;
@@ -203,13 +204,13 @@ const EventDetail = () => {
       <section className="py-8 md:py-12 bg-background">
         <div className="container-wide">
           <div className="max-w-4xl mx-auto">
-            {event.featured_image && (
-              <div className="mb-12 rounded-2xl overflow-hidden shadow-xl bg-muted/30">
-                <div className="aspect-video w-full flex items-center justify-center">
+            {(event.hero_image || event.featured_image) && (
+              <div className="mb-12 rounded-2xl overflow-hidden shadow-xl">
+                <div className="aspect-video w-full">
                   <img
-                    src={event.featured_image}
+                    src={event.hero_image || event.featured_image}
                     alt={event.title}
-                    className="max-w-full max-h-full object-contain"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               </div>

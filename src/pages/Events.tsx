@@ -15,6 +15,7 @@ interface Event {
   venue: string | null;
   event_date: string | null;
   featured_image: string | null;
+  hero_image: string | null;
   registration_url: string | null;
   is_upcoming: boolean;
   is_featured: boolean;
@@ -55,16 +56,22 @@ const Events = () => {
   const EventCard = ({ event }: { event: Event }) => (
     <div className="blog-card group">
       <Link to={`/events/${event.slug}`} className="block">
-        <div className="aspect-[16/10] overflow-hidden">
+        <div className="aspect-[16/10] overflow-hidden bg-muted">
           <img
-            src={event.featured_image || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800"}
+            src={
+              event.hero_image ||
+              event.featured_image ||
+              "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800"
+            }
             alt={event.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </div>
       </Link>
       <div className="p-6">
-        <span className={`event-badge mb-3 ${event.is_upcoming ? "event-badge-upcoming" : "event-badge-past"}`}>
+        <span
+          className={`event-badge mb-3 ${event.is_upcoming ? "event-badge-upcoming" : "event-badge-past"}`}
+        >
           {event.is_upcoming ? "Upcoming" : "Past Event"}
         </span>
         <Link to={`/events/${event.slug}`}>
@@ -81,11 +88,13 @@ const Events = () => {
           {event.event_date && (
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              <span>{new Date(event.event_date).toLocaleDateString("en-US", { 
-                year: "numeric", 
-                month: "long", 
-                day: "numeric" 
-              })}</span>
+              <span>
+                {new Date(event.event_date).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
             </div>
           )}
           {event.location && (
@@ -95,16 +104,27 @@ const Events = () => {
             </div>
           )}
         </div>
-        
+
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" asChild className="flex-1 bg-black text-white hover:bg-black/90 border-black">
-            <Link to={`/events/${event.slug}`}>
-              View Details
-            </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="flex-1 bg-black text-white hover:bg-black/90 border-black"
+          >
+            <Link to={`/events/${event.slug}`}>View Details</Link>
           </Button>
           {event.registration_url && event.is_upcoming && (
-            <Button size="sm" asChild className="flex-1 gap-1 bg-black text-white hover:bg-black/90">
-              <a href={event.registration_url} target="_blank" rel="noopener noreferrer">
+            <Button
+              size="sm"
+              asChild
+              className="flex-1 gap-1 bg-black text-white hover:bg-black/90"
+            >
+              <a
+                href={event.registration_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Register
                 <ExternalLink className="h-3 w-3" />
               </a>
@@ -124,8 +144,9 @@ const Events = () => {
             Our Events
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover our upcoming and past events. Join us for exceptional business conferences,
-            networking opportunities, and industry-leading discussions.
+            Discover our upcoming and past events. Join us for exceptional
+            business conferences, networking opportunities, and industry-leading
+            discussions.
           </p>
         </div>
       </section>
@@ -139,16 +160,27 @@ const Events = () => {
             </div>
           ) : error ? (
             <div className="text-center py-12">
-              <p className="text-destructive mb-4">Error loading events: {error}</p>
-              <Button onClick={() => window.location.reload()} className="bg-black text-white hover:bg-black/90">Retry</Button>
+              <p className="text-destructive mb-4">
+                Error loading events: {error}
+              </p>
+              <Button
+                onClick={() => window.location.reload()}
+                className="bg-black text-white hover:bg-black/90"
+              >
+                Retry
+              </Button>
             </div>
           ) : (
             <Tabs defaultValue="upcoming" className="w-full">
               <TabsList className="mb-8">
-                <TabsTrigger value="upcoming">Upcoming Events ({upcomingEvents.length})</TabsTrigger>
-                <TabsTrigger value="past">Past Events ({pastEvents.length})</TabsTrigger>
+                <TabsTrigger value="upcoming">
+                  Upcoming Events ({upcomingEvents.length})
+                </TabsTrigger>
+                <TabsTrigger value="past">
+                  Past Events ({pastEvents.length})
+                </TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="upcoming">
                 {upcomingEvents.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -158,14 +190,19 @@ const Events = () => {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <p className="text-muted-foreground">No upcoming events at the moment.</p>
-                    <Button className="mt-4 bg-black text-white hover:bg-black/90" asChild>
+                    <p className="text-muted-foreground">
+                      No upcoming events at the moment.
+                    </p>
+                    <Button
+                      className="mt-4 bg-black text-white hover:bg-black/90"
+                      asChild
+                    >
                       <Link to="/contact">Contact us for custom events</Link>
                     </Button>
                   </div>
                 )}
               </TabsContent>
-              
+
               <TabsContent value="past">
                 {pastEvents.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -175,7 +212,9 @@ const Events = () => {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <p className="text-muted-foreground">No past events to display.</p>
+                    <p className="text-muted-foreground">
+                      No past events to display.
+                    </p>
                   </div>
                 )}
               </TabsContent>
