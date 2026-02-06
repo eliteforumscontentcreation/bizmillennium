@@ -135,10 +135,10 @@ const EventDetail = () => {
     <Layout>
       {/* Hero Section */}
       <section className="relative py-16 md:py-24 bg-secondary">
-        {(event.hero_image || event.featured_image) && (
+        {event.hero_image && (
           <div className="absolute inset-0 opacity-20">
             <img
-              src={event.hero_image || event.featured_image}
+              src={event.hero_image}
               alt={event.title}
               className="w-full h-full object-cover"
             />
@@ -204,11 +204,12 @@ const EventDetail = () => {
       <section className="py-8 md:py-12 bg-background">
         <div className="container-wide">
           <div className="max-w-4xl mx-auto">
-            {(event.hero_image || event.featured_image) && (
+            {/* Show Hero Image as main banner */}
+            {event.hero_image && (
               <div className="mb-12 rounded-2xl overflow-hidden shadow-xl">
                 <div className="aspect-video w-full">
                   <img
-                    src={event.hero_image || event.featured_image}
+                    src={event.hero_image}
                     alt={event.title}
                     className="w-full h-full object-cover"
                   />

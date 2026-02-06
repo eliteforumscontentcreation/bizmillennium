@@ -59,7 +59,6 @@ const Events = () => {
         <div className="aspect-[16/10] overflow-hidden bg-muted">
           <img
             src={
-              event.hero_image ||
               event.featured_image ||
               "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800"
             }
