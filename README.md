@@ -208,12 +208,6 @@ const { data, error } = await supabase
 
 This project is proprietary software. All rights reserved.
 
-## 🔗 Links
-
-- **Live Site**: [bizmillennium.lovable.app](https://bizmillennium.lovable.app)
-- **Documentation**: [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md)
-- **Lovable Docs**: [docs.lovable.dev](https://docs.lovable.dev)
-
 ---
 
 Built with ❤️ using [Lovable](https://lovable.dev)
