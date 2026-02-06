@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,15 @@ import {
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Calendar, ExternalLink } from "lucide-react";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Calendar,
+  ExternalLink,
+  Loader2,
+  Image,
+} from "lucide-react";
 import { format } from "date-fns";
 
 interface Event {
@@ -37,14 +45,22 @@ interface Event {
   is_upcoming: boolean;
   is_featured: boolean;
   featured_image: string | null;
+  hero_image: string | null;
   registration_url: string | null;
 }
 
 export default function EventsAdmin() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [selectedHeroFile, setSelectedHeroFile] = useState<File | null>(null);
+  const [selectedFeaturedFile, setSelectedFeaturedFile] = useState<File | null>(
+    null,
+  );
+  const [heroPreviewUrl, setHeroPreviewUrl] = useState<string>("");
+  const [featuredPreviewUrl, setFeaturedPreviewUrl] = useState<string>("");
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -57,6 +73,7 @@ export default function EventsAdmin() {
     is_upcoming: true,
     is_featured: false,
     featured_image: "",
+    hero_image: "",
     registration_url: "",
   });
 
@@ -82,13 +99,127 @@ export default function EventsAdmin() {
     setLoading(false);
   };
 
+  const handleFileSelect = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "hero" | "featured",
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        toast({
+          title: "Error",
+          description: "Please select an image file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Error",
+          description: "Image size must be less than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (type === "hero") {
+        setSelectedHeroFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setHeroPreviewUrl(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setSelectedFeaturedFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFeaturedPreviewUrl(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
+  const uploadImage = async (
+    file: File,
+    folder: string,
+  ): Promise<string | null> => {
+    try {
+      // Generate unique filename
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `${folder}/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from("images")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get public URL
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("images").getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({
+        title: "Upload Error",
+        description:
+          error instanceof Error ? error.message : "Failed to upload image",
+        variant: "destructive",
+      });
+      return null;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setUploading(true);
+
+    let heroImageUrl = formData.hero_image;
+    let featuredImageUrl = formData.featured_image;
+
+    // Upload hero image if selected
+    if (selectedHeroFile) {
+      const uploadedUrl = await uploadImage(selectedHeroFile, "event-hero");
+      if (uploadedUrl) {
+        heroImageUrl = uploadedUrl;
+      }
+    }
+
+    // Upload featured image if selected
+    if (selectedFeaturedFile) {
+      const uploadedUrl = await uploadImage(
+        selectedFeaturedFile,
+        "event-featured",
+      );
+      if (uploadedUrl) {
+        featuredImageUrl = uploadedUrl;
+      }
+    }
 
     const eventData = {
-      ...formData,
+      title: formData.title,
       slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, "-"),
+      description: formData.description || null,
       event_date: formData.event_date || null,
+      location: formData.location || null,
+      venue: formData.venue || null,
+      is_upcoming: formData.is_upcoming,
+      is_featured: formData.is_featured,
+      featured_image: featuredImageUrl || null,
+      hero_image: heroImageUrl || null,
       registration_url: formData.registration_url || null,
     };
 
@@ -124,6 +255,7 @@ export default function EventsAdmin() {
         resetForm();
       }
     }
+    setUploading(false);
   };
 
   const handleEdit = (event: Event) => {
@@ -138,8 +270,11 @@ export default function EventsAdmin() {
       is_upcoming: event.is_upcoming,
       is_featured: event.is_featured,
       featured_image: event.featured_image || "",
+      hero_image: event.hero_image || "",
       registration_url: event.registration_url || "",
     });
+    setHeroPreviewUrl(event.hero_image || "");
+    setFeaturedPreviewUrl(event.featured_image || "");
     setIsDialogOpen(true);
   };
 
@@ -171,9 +306,14 @@ export default function EventsAdmin() {
       is_upcoming: true,
       is_featured: false,
       featured_image: "",
+      hero_image: "",
       registration_url: "",
     });
     setEditingEvent(null);
+    setSelectedHeroFile(null);
+    setSelectedFeaturedFile(null);
+    setHeroPreviewUrl("");
+    setFeaturedPreviewUrl("");
     setIsDialogOpen(false);
   };
 
@@ -183,7 +323,9 @@ export default function EventsAdmin() {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-bold text-foreground">Events</h2>
-            <p className="text-muted-foreground">Manage your events and registration links</p>
+            <p className="text-muted-foreground">
+              Manage your events, hero images, and registration links
+            </p>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -272,16 +414,96 @@ export default function EventsAdmin() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="featured_image">Featured Image URL</Label>
-                  <Input
-                    id="featured_image"
-                    value={formData.featured_image}
-                    onChange={(e) =>
-                      setFormData({ ...formData, featured_image: e.target.value })
-                    }
-                    placeholder="/images/ImageUpload.jpg"
-                  />
+                {/* Hero Image Upload */}
+                <div className="space-y-2 p-4 border rounded-lg bg-muted/30">
+                  <Label className="text-base font-semibold">Hero Image</Label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    This image will be displayed as the main banner for the
+                    event page
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileSelect(e, "hero")}
+                        disabled={uploading}
+                        className="flex-1"
+                      />
+                      {uploading && (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      )}
+                    </div>
+                    {heroPreviewUrl && (
+                      <div className="relative w-full h-32 border rounded-lg overflow-hidden">
+                        <img
+                          src={heroPreviewUrl}
+                          alt="Hero Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="text-center text-xs text-muted-foreground">
+                      OR
+                    </div>
+                    <Input
+                      id="hero_image"
+                      value={formData.hero_image}
+                      onChange={(e) =>
+                        setFormData({ ...formData, hero_image: e.target.value })
+                      }
+                      placeholder="Enter hero image URL"
+                      disabled={!!selectedHeroFile}
+                    />
+                  </div>
+                </div>
+
+                {/* Featured Image Upload */}
+                <div className="space-y-2 p-4 border rounded-lg bg-muted/30">
+                  <Label className="text-base font-semibold">
+                    Featured Image (Thumbnail)
+                  </Label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    This image will be used as thumbnail in event listings
+                  </p>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileSelect(e, "featured")}
+                        disabled={uploading}
+                        className="flex-1"
+                      />
+                      {uploading && (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      )}
+                    </div>
+                    {featuredPreviewUrl && (
+                      <div className="relative w-full h-32 border rounded-lg overflow-hidden">
+                        <img
+                          src={featuredPreviewUrl}
+                          alt="Featured Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="text-center text-xs text-muted-foreground">
+                      OR
+                    </div>
+                    <Input
+                      id="featured_image"
+                      value={formData.featured_image}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          featured_image: e.target.value,
+                        })
+                      }
+                      placeholder="Enter featured image URL"
+                      disabled={!!selectedFeaturedFile}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -290,7 +512,10 @@ export default function EventsAdmin() {
                     id="registration_url"
                     value={formData.registration_url}
                     onChange={(e) =>
-                      setFormData({ ...formData, registration_url: e.target.value })
+                      setFormData({
+                        ...formData,
+                        registration_url: e.target.value,
+                      })
                     }
                     placeholder="https://example.com/register"
                   />
@@ -326,8 +551,17 @@ export default function EventsAdmin() {
                   <Button type="button" variant="outline" onClick={resetForm}>
                     Cancel
                   </Button>
-                  <Button type="submit">
-                    {editingEvent ? "Update" : "Create"}
+                  <Button type="submit" disabled={uploading}>
+                    {uploading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Saving...
+                      </>
+                    ) : editingEvent ? (
+                      "Update"
+                    ) : (
+                      "Create"
+                    )}
                   </Button>
                 </div>
               </form>
@@ -350,6 +584,7 @@ export default function EventsAdmin() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Hero</TableHead>
                     <TableHead>Title</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Location</TableHead>
@@ -361,7 +596,22 @@ export default function EventsAdmin() {
                 <TableBody>
                   {events.map((event) => (
                     <TableRow key={event.id}>
-                      <TableCell className="font-medium">{event.title}</TableCell>
+                      <TableCell>
+                        {event.hero_image ? (
+                          <img
+                            src={event.hero_image}
+                            alt={event.title}
+                            className="w-16 h-12 object-cover rounded"
+                          />
+                        ) : (
+                          <div className="w-16 h-12 bg-muted rounded flex items-center justify-center">
+                            <Image className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {event.title}
+                      </TableCell>
                       <TableCell>
                         {event.event_date
                           ? format(new Date(event.event_date), "MMM d, yyyy")

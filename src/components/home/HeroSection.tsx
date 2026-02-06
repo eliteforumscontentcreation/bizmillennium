@@ -57,16 +57,16 @@ export function HeroSection() {
         <div className="container-wide relative z-10">
           <div className="text-center max-w-4xl mx-auto mb-8 md:mb-12">
             {/* Main Title with Purple-Cyan Gradient */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-3 md:mb-4 hero-text-gradient">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4 hero-text-gradient">
               Biz Millennium
             </h1>
 
             {/* Cycling Typewriter Effect - "For [word]" - Same size as main title */}
-            <div className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 md:mb-8 min-h-[3rem] md:min-h-[4rem] flex items-center justify-center">
+            <div className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 md:mb-8 min-h-[2.5rem] md:min-h-[3.5rem] flex items-center justify-center">
               <span className="text-black">For </span>
               <span className="ml-2 text-black">
                 {cyclingText}
-                <span className="inline-block w-0.5 h-8 md:h-10 bg-black ml-1 animate-pulse"></span>
+                <span className="inline-block w-0.5 h-6 md:h-8 bg-black ml-1 animate-pulse"></span>
               </span>
             </div>
 
