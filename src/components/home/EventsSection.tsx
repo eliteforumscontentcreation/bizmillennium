@@ -63,10 +63,10 @@ export function EventsSection() {
   }
 
   const EventCard = ({ event }: { event: Event }) => (
-    <div className="group">
+    <div className="group bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
       {/* Image - full width, auto height to show complete image */}
       <Link to={`/events/${event.slug}`} className="block">
-        <div className="rounded-2xl overflow-hidden bg-muted mb-4">
+        <div className="overflow-hidden bg-muted">
           <img
             src={
               event.featured_image ||
@@ -78,37 +78,83 @@ export function EventsSection() {
         </div>
       </Link>
 
-      {/* Location */}
-      {event.location && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-          <MapPin className="h-4 w-4" />
-          <span>{event.location}</span>
-        </div>
-      )}
+      {/* Content */}
+      <div className="p-5">
+        {/* Badge */}
+        <span
+          className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3 ${
+            event.is_upcoming
+              ? "bg-accent/10 text-accent"
+              : "bg-muted text-muted-foreground"
+          }`}
+        >
+          {event.is_upcoming ? "Upcoming" : "Past Event"}
+        </span>
 
-      {/* Date - in accent color like reference */}
-      {event.event_date && (
-        <div className="flex items-center gap-2 text-sm text-pink-600 font-medium mb-4">
-          <Calendar className="h-4 w-4" />
-          <span>
-            {new Date(event.event_date).toLocaleDateString("en-US", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
-          </span>
-        </div>
-      )}
+        {/* Title */}
+        <Link to={`/events/${event.slug}`}>
+          <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-accent transition-colors line-clamp-2">
+            {event.title}
+          </h3>
+        </Link>
 
-      {/* View Details Button */}
-      <Button
-        variant="outline"
-        size="sm"
-        asChild
-        className="w-full bg-black text-white hover:bg-black/90 border-black"
-      >
-        <Link to={`/events/${event.slug}`}>View Details</Link>
-      </Button>
+        {/* Description */}
+        {event.description && (
+          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+            {event.description}
+          </p>
+        )}
+
+        {/* Location */}
+        {event.location && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+            <MapPin className="h-4 w-4" />
+            <span>{event.location}</span>
+          </div>
+        )}
+
+        {/* Date - in accent color */}
+        {event.event_date && (
+          <div className="flex items-center gap-2 text-sm text-pink-600 font-medium mb-4">
+            <Calendar className="h-4 w-4" />
+            <span>
+              {new Date(event.event_date).toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </span>
+          </div>
+        )}
+
+        {/* Buttons */}
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="flex-1 bg-black text-white hover:bg-black/90 border-black"
+          >
+            <Link to={`/events/${event.slug}`}>View Details</Link>
+          </Button>
+          {event.registration_url && event.is_upcoming && (
+            <Button
+              size="sm"
+              asChild
+              className="flex-1 gap-1 bg-black text-white hover:bg-black/90"
+            >
+              <a
+                href={event.registration_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Register
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 
