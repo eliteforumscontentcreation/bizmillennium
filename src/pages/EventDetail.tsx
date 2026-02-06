@@ -55,7 +55,7 @@ const EventDetail = () => {
           setError(eventError.message);
         } else if (eventData) {
           setEvent(eventData);
-          
+
           // Fetch gallery images for this event
           const { data: galleryData, error: galleryError } = await supabase
             .from("gallery")
@@ -134,10 +134,10 @@ const EventDetail = () => {
     <Layout>
       {/* Hero Section */}
       <section className="relative py-16 md:py-24 bg-secondary">
-        {event.featured_image && (
+        {(event.hero_image || event.featured_image) && (
           <div className="absolute inset-0 opacity-20">
             <img
-              src={event.featured_image}
+              src={event.hero_image || event.featured_image}
               alt={event.title}
               className="w-full h-full object-cover"
             />
@@ -151,15 +151,17 @@ const EventDetail = () => {
             <ArrowLeft className="h-4 w-4" />
             Back to Events
           </Link>
-          
+
           <div className="max-w-3xl">
-            <span className={`event-badge mb-4 ${event.is_upcoming ? "event-badge-upcoming" : "event-badge-past"}`}>
+            <span
+              className={`event-badge mb-4 ${event.is_upcoming ? "event-badge-upcoming" : "event-badge-past"}`}
+            >
               {event.is_upcoming ? "Upcoming Event" : "Past Event"}
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
               {event.title}
             </h1>
-            
+
             <div className="flex flex-wrap gap-6 text-foreground/80 mb-8">
               {event.event_date && (
                 <div className="flex items-center gap-2">
@@ -183,7 +185,11 @@ const EventDetail = () => {
 
             {event.registration_url && event.is_upcoming && (
               <Button size="lg" asChild className="gap-2">
-                <a href={event.registration_url} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={event.registration_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Register Now
                   <ExternalLink className="h-4 w-4" />
                 </a>
@@ -198,12 +204,14 @@ const EventDetail = () => {
         <div className="container-wide">
           <div className="max-w-4xl mx-auto">
             {event.featured_image && (
-              <div className="mb-12 rounded-2xl overflow-hidden shadow-xl">
-                <img
-                  src={event.featured_image}
-                  alt={event.title}
-                  className="w-full h-auto aspect-video object-cover"
-                />
+              <div className="mb-12 rounded-2xl overflow-hidden shadow-xl bg-muted/30">
+                <div className="aspect-video w-full flex items-center justify-center">
+                  <img
+                    src={event.featured_image}
+                    alt={event.title}
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
               </div>
             )}
 
@@ -229,7 +237,11 @@ const EventDetail = () => {
                   Secure your spot at this exclusive event today.
                 </p>
                 <Button size="lg" variant="secondary" asChild className="gap-2">
-                  <a href={event.registration_url} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={event.registration_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Register Now
                     <ExternalLink className="h-4 w-4" />
                   </a>
@@ -245,25 +257,32 @@ const EventDetail = () => {
         <section className="py-8 md:py-12 bg-secondary/30">
           <div className="container-wide">
             <div className="text-center mb-6">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Event Gallery</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Event Gallery
+              </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Browse through the highlights and memorable moments from this event.
+                Browse through the highlights and memorable moments from this
+                event.
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {galleryImages.map((item, index) => (
                 <div
                   key={item.id}
                   onClick={() => setSelectedImage(item)}
-                  className="relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer group animate-fade-in-up"
+                  className="relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer group animate-fade-in-up bg-muted/30"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  <img
-                    src={item.image_url}
-                    alt={item.alt_text || item.caption || "Event gallery image"}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
+                  <div className="w-full h-full flex items-center justify-center">
+                    <img
+                      src={item.image_url}
+                      alt={
+                        item.alt_text || item.caption || "Event gallery image"
+                      }
+                      className="max-w-full max-h-full w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
+                    />
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="absolute bottom-4 left-4 right-4">
                       <p className="text-white font-medium">{item.caption}</p>
@@ -290,7 +309,9 @@ const EventDetail = () => {
           </button>
           <img
             src={selectedImage.image_url}
-            alt={selectedImage.alt_text || selectedImage.caption || "Gallery image"}
+            alt={
+              selectedImage.alt_text || selectedImage.caption || "Gallery image"
+            }
             className="max-w-full max-h-[90vh] object-contain rounded-lg"
             onClick={(e) => e.stopPropagation()}
           />

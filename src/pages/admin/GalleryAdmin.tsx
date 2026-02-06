@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Image, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Image, Loader2, X } from "lucide-react";
 
 interface SiteGalleryItem {
   id: string;
@@ -292,6 +292,12 @@ export default function GalleryAdmin() {
     setIsDialogOpen(false);
   };
 
+  const removeImage = () => {
+    setSelectedFile(null);
+    setPreviewUrl("");
+    setFormData({ ...formData, image_url: "" });
+  };
+
   const filteredItems =
     categoryFilter === "all"
       ? items
@@ -328,51 +334,69 @@ export default function GalleryAdmin() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label>Upload Image</Label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Any dimension will be automatically adjusted to fit.
+                  </p>
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileSelect}
-                        disabled={uploading}
-                        className="flex-1"
-                      />
-                      {uploading && (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      )}
-                    </div>
-                    {previewUrl && (
-                      <div className="relative w-full h-48 border rounded-lg overflow-hidden bg-muted/50 flex items-center justify-center">
-                        <img
-                          src={previewUrl}
-                          alt="Preview"
-                          className="max-w-full max-h-full object-contain"
+                    {!previewUrl && !formData.image_url && (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileSelect}
+                          disabled={uploading}
+                          className="flex-1"
                         />
+                        {uploading && (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        )}
                       </div>
                     )}
-                    <p className="text-xs text-muted-foreground">
-                      Upload an image directly (max 5MB) or provide a URL below
-                    </p>
+                    {(previewUrl || formData.image_url) && (
+                      <div className="relative w-full border rounded-lg overflow-hidden bg-muted/50">
+                        <div className="aspect-[4/3] w-full flex items-center justify-center bg-black/5">
+                          <img
+                            src={previewUrl || formData.image_url}
+                            alt="Preview"
+                            className="max-w-full max-h-full object-contain"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 h-8 w-8"
+                          onClick={removeImage}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                    {!previewUrl && !formData.image_url && (
+                      <>
+                        <p className="text-xs text-muted-foreground">
+                          Upload an image directly (max 5MB) or provide a URL
+                          below
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="image_url">Or Image URL</Label>
-                  <Input
-                    id="image_url"
-                    value={formData.image_url}
-                    onChange={(e) =>
-                      setFormData({ ...formData, image_url: e.target.value })
-                    }
-                    placeholder="/images/photo.jpg or https://..."
-                    disabled={!!selectedFile}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {selectedFile
-                      ? "Clear the file upload to use URL"
-                      : "Provide an image URL if not uploading"}
-                  </p>
-                </div>
+                {!previewUrl && !formData.image_url && (
+                  <div className="space-y-2">
+                    <Label htmlFor="image_url">Or Image URL</Label>
+                    <Input
+                      id="image_url"
+                      value={formData.image_url}
+                      onChange={(e) =>
+                        setFormData({ ...formData, image_url: e.target.value })
+                      }
+                      placeholder="/images/photo.jpg or https://..."
+                      disabled={!!selectedFile}
+                    />
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <Label htmlFor="caption">Caption</Label>
@@ -518,7 +542,7 @@ export default function GalleryAdmin() {
                   {filteredItems.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell>
-                        <div className="w-16 h-16 bg-muted/50 rounded flex items-center justify-center overflow-hidden">
+                        <div className="w-20 h-16 bg-muted/50 rounded flex items-center justify-center overflow-hidden">
                           <img
                             src={item.image_url}
                             alt={item.alt_text || "Gallery image"}

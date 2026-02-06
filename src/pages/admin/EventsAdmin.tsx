@@ -31,6 +31,7 @@ import {
   ExternalLink,
   Loader2,
   Image,
+  X,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -181,6 +182,18 @@ export default function EventsAdmin() {
       });
       return null;
     }
+  };
+
+  const removeHeroImage = () => {
+    setSelectedHeroFile(null);
+    setHeroPreviewUrl("");
+    setFormData({ ...formData, hero_image: "" });
+  };
+
+  const removeFeaturedImage = () => {
+    setSelectedFeaturedFile(null);
+    setFeaturedPreviewUrl("");
+    setFormData({ ...formData, featured_image: "" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -419,42 +432,62 @@ export default function EventsAdmin() {
                   <Label className="text-base font-semibold">Hero Image</Label>
                   <p className="text-xs text-muted-foreground mb-2">
                     This image will be displayed as the main banner for the
-                    event page
+                    event page. Any dimension will be automatically adjusted.
                   </p>
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileSelect(e, "hero")}
-                        disabled={uploading}
-                        className="flex-1"
-                      />
-                      {uploading && (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      )}
-                    </div>
-                    {heroPreviewUrl && (
-                      <div className="relative w-full h-48 border rounded-lg overflow-hidden bg-muted/50 flex items-center justify-center">
-                        <img
-                          src={heroPreviewUrl}
-                          alt="Hero Preview"
-                          className="max-w-full max-h-full object-contain"
+                    {!heroPreviewUrl && !formData.hero_image && (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleFileSelect(e, "hero")}
+                          disabled={uploading}
+                          className="flex-1"
                         />
+                        {uploading && (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        )}
                       </div>
                     )}
-                    <div className="text-center text-xs text-muted-foreground">
-                      OR
-                    </div>
-                    <Input
-                      id="hero_image"
-                      value={formData.hero_image}
-                      onChange={(e) =>
-                        setFormData({ ...formData, hero_image: e.target.value })
-                      }
-                      placeholder="Enter hero image URL"
-                      disabled={!!selectedHeroFile}
-                    />
+                    {(heroPreviewUrl || formData.hero_image) && (
+                      <div className="relative w-full border rounded-lg overflow-hidden bg-muted/50">
+                        <div className="aspect-video w-full flex items-center justify-center bg-black/5">
+                          <img
+                            src={heroPreviewUrl || formData.hero_image}
+                            alt="Hero Preview"
+                            className="max-w-full max-h-full object-contain"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 h-8 w-8"
+                          onClick={removeHeroImage}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                    {!heroPreviewUrl && !formData.hero_image && (
+                      <>
+                        <div className="text-center text-xs text-muted-foreground">
+                          OR
+                        </div>
+                        <Input
+                          id="hero_image"
+                          value={formData.hero_image}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              hero_image: e.target.value,
+                            })
+                          }
+                          placeholder="Enter hero image URL"
+                          disabled={!!selectedHeroFile}
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -464,45 +497,63 @@ export default function EventsAdmin() {
                     Featured Image (Thumbnail)
                   </Label>
                   <p className="text-xs text-muted-foreground mb-2">
-                    This image will be used as thumbnail in event listings
+                    This image will be used as thumbnail in event listings. Any
+                    dimension will be automatically adjusted.
                   </p>
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleFileSelect(e, "featured")}
-                        disabled={uploading}
-                        className="flex-1"
-                      />
-                      {uploading && (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      )}
-                    </div>
-                    {featuredPreviewUrl && (
-                      <div className="relative w-full h-48 border rounded-lg overflow-hidden bg-muted/50 flex items-center justify-center">
-                        <img
-                          src={featuredPreviewUrl}
-                          alt="Featured Preview"
-                          className="max-w-full max-h-full object-contain"
+                    {!featuredPreviewUrl && !formData.featured_image && (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleFileSelect(e, "featured")}
+                          disabled={uploading}
+                          className="flex-1"
                         />
+                        {uploading && (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        )}
                       </div>
                     )}
-                    <div className="text-center text-xs text-muted-foreground">
-                      OR
-                    </div>
-                    <Input
-                      id="featured_image"
-                      value={formData.featured_image}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          featured_image: e.target.value,
-                        })
-                      }
-                      placeholder="Enter featured image URL"
-                      disabled={!!selectedFeaturedFile}
-                    />
+                    {(featuredPreviewUrl || formData.featured_image) && (
+                      <div className="relative w-full border rounded-lg overflow-hidden bg-muted/50">
+                        <div className="aspect-video w-full flex items-center justify-center bg-black/5">
+                          <img
+                            src={featuredPreviewUrl || formData.featured_image}
+                            alt="Featured Preview"
+                            className="max-w-full max-h-full object-contain"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 h-8 w-8"
+                          onClick={removeFeaturedImage}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                    {!featuredPreviewUrl && !formData.featured_image && (
+                      <>
+                        <div className="text-center text-xs text-muted-foreground">
+                          OR
+                        </div>
+                        <Input
+                          id="featured_image"
+                          value={formData.featured_image}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              featured_image: e.target.value,
+                            })
+                          }
+                          placeholder="Enter featured image URL"
+                          disabled={!!selectedFeaturedFile}
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
 
