@@ -435,11 +435,11 @@ export default function EventsAdmin() {
                       )}
                     </div>
                     {heroPreviewUrl && (
-                      <div className="relative w-full h-32 border rounded-lg overflow-hidden">
+                      <div className="relative w-full h-48 border rounded-lg overflow-hidden bg-muted/50 flex items-center justify-center">
                         <img
                           src={heroPreviewUrl}
                           alt="Hero Preview"
-                          className="w-full h-full object-cover"
+                          className="max-w-full max-h-full object-contain"
                         />
                       </div>
                     )}
@@ -480,11 +480,11 @@ export default function EventsAdmin() {
                       )}
                     </div>
                     {featuredPreviewUrl && (
-                      <div className="relative w-full h-32 border rounded-lg overflow-hidden">
+                      <div className="relative w-full h-48 border rounded-lg overflow-hidden bg-muted/50 flex items-center justify-center">
                         <img
                           src={featuredPreviewUrl}
                           alt="Featured Preview"
-                          className="w-full h-full object-cover"
+                          className="max-w-full max-h-full object-contain"
                         />
                       </div>
                     )}
@@ -598,13 +598,15 @@ export default function EventsAdmin() {
                     <TableRow key={event.id}>
                       <TableCell>
                         {event.hero_image ? (
-                          <img
-                            src={event.hero_image}
-                            alt={event.title}
-                            className="w-16 h-12 object-cover rounded"
-                          />
+                          <div className="w-20 h-14 bg-muted/50 rounded flex items-center justify-center overflow-hidden">
+                            <img
+                              src={event.hero_image}
+                              alt={event.title}
+                              className="max-w-full max-h-full object-contain"
+                            />
+                          </div>
                         ) : (
-                          <div className="w-16 h-12 bg-muted rounded flex items-center justify-center">
+                          <div className="w-20 h-14 bg-muted rounded flex items-center justify-center">
                             <Image className="h-4 w-4 text-muted-foreground" />
                           </div>
                         )}

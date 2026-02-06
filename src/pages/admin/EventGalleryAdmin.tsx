@@ -111,7 +111,7 @@ export default function EventGalleryAdmin() {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         toast({
           title: "Error",
           description: "Please select an image file",
@@ -146,16 +146,16 @@ export default function EventGalleryAdmin() {
       setUploading(true);
 
       // Generate unique filename
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split(".").pop();
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
       const filePath = `gallery/${fileName}`;
 
       // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
-        .from('images')
+        .from("images")
         .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
+          cacheControl: "3600",
+          upsert: false,
         });
 
       if (uploadError) {
@@ -163,16 +163,17 @@ export default function EventGalleryAdmin() {
       }
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('images')
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("images").getPublicUrl(filePath);
 
       return publicUrl;
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error("Upload error:", error);
       toast({
         title: "Upload Error",
-        description: error instanceof Error ? error.message : "Failed to upload image",
+        description:
+          error instanceof Error ? error.message : "Failed to upload image",
         variant: "destructive",
       });
       return null;
@@ -232,7 +233,10 @@ export default function EventGalleryAdmin() {
           variant: "destructive",
         });
       } else {
-        toast({ title: "Success", description: "Event gallery item updated successfully" });
+        toast({
+          title: "Success",
+          description: "Event gallery item updated successfully",
+        });
         fetchItems();
         resetForm();
       }
@@ -246,7 +250,10 @@ export default function EventGalleryAdmin() {
           variant: "destructive",
         });
       } else {
-        toast({ title: "Success", description: "Event gallery item created successfully" });
+        toast({
+          title: "Success",
+          description: "Event gallery item created successfully",
+        });
         fetchItems();
         resetForm();
       }
@@ -269,7 +276,8 @@ export default function EventGalleryAdmin() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this event gallery item?")) return;
+    if (!confirm("Are you sure you want to delete this event gallery item?"))
+      return;
 
     const { error } = await supabase.from("gallery").delete().eq("id", id);
 
@@ -280,7 +288,10 @@ export default function EventGalleryAdmin() {
         variant: "destructive",
       });
     } else {
-      toast({ title: "Success", description: "Event gallery item deleted successfully" });
+      toast({
+        title: "Success",
+        description: "Event gallery item deleted successfully",
+      });
       fetchItems();
     }
   };
@@ -303,38 +314,39 @@ export default function EventGalleryAdmin() {
 
   const getEventTitle = (eventId: string | null) => {
     if (!eventId) return "No Event";
-    const event = events.find(e => e.id === eventId);
+    const event = events.find((e) => e.id === eventId);
     return event?.title || "Unknown Event";
   };
 
   const getEventStatus = (eventId: string | null) => {
     if (!eventId) return null;
-    const event = events.find(e => e.id === eventId);
+    const event = events.find((e) => e.id === eventId);
     return event?.is_upcoming ? "Upcoming" : "Past";
   };
 
-  const filteredItems = selectedEventFilter === "all"
-    ? items
-    : selectedEventFilter === "upcoming"
-    ? items.filter(item => {
-        const event = events.find(e => e.id === item.event_id);
-        return event?.is_upcoming === true;
-      })
-    : selectedEventFilter === "past"
-    ? items.filter(item => {
-        const event = events.find(e => e.id === item.event_id);
-        return event?.is_upcoming === false;
-      })
-    : items.filter(item => item.event_id === selectedEventFilter);
+  const filteredItems =
+    selectedEventFilter === "all"
+      ? items
+      : selectedEventFilter === "upcoming"
+        ? items.filter((item) => {
+            const event = events.find((e) => e.id === item.event_id);
+            return event?.is_upcoming === true;
+          })
+        : selectedEventFilter === "past"
+          ? items.filter((item) => {
+              const event = events.find((e) => e.id === item.event_id);
+              return event?.is_upcoming === false;
+            })
+          : items.filter((item) => item.event_id === selectedEventFilter);
 
-  const upcomingEvents = events.filter(e => e.is_upcoming);
-  const pastEvents = events.filter(e => !e.is_upcoming);
-  const upcomingPhotosCount = items.filter(item => {
-    const event = events.find(e => e.id === item.event_id);
+  const upcomingEvents = events.filter((e) => e.is_upcoming);
+  const pastEvents = events.filter((e) => !e.is_upcoming);
+  const upcomingPhotosCount = items.filter((item) => {
+    const event = events.find((e) => e.id === item.event_id);
     return event?.is_upcoming === true;
   }).length;
-  const pastPhotosCount = items.filter(item => {
-    const event = events.find(e => e.id === item.event_id);
+  const pastPhotosCount = items.filter((item) => {
+    const event = events.find((e) => e.id === item.event_id);
     return event?.is_upcoming === false;
   }).length;
 
@@ -343,8 +355,12 @@ export default function EventGalleryAdmin() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Event Gallery</h2>
-            <p className="text-muted-foreground">Manage photos for specific events (upcoming and past)</p>
+            <h2 className="text-2xl font-bold text-foreground">
+              Event Gallery
+            </h2>
+            <p className="text-muted-foreground">
+              Manage photos for specific events (upcoming and past)
+            </p>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -376,7 +392,11 @@ export default function EventGalleryAdmin() {
                     <SelectContent>
                       {upcomingEvents.length > 0 && (
                         <>
-                          <SelectItem value="__upcoming_header__" disabled className="font-semibold text-accent">
+                          <SelectItem
+                            value="__upcoming_header__"
+                            disabled
+                            className="font-semibold text-accent"
+                          >
                             Upcoming Events
                           </SelectItem>
                           {upcomingEvents.map((event) => (
@@ -388,7 +408,11 @@ export default function EventGalleryAdmin() {
                       )}
                       {pastEvents.length > 0 && (
                         <>
-                          <SelectItem value="__past_header__" disabled className="font-semibold text-muted-foreground">
+                          <SelectItem
+                            value="__past_header__"
+                            disabled
+                            className="font-semibold text-muted-foreground"
+                          >
                             Past Events
                           </SelectItem>
                           {pastEvents.map((event) => (
@@ -416,14 +440,16 @@ export default function EventGalleryAdmin() {
                         disabled={uploading}
                         className="flex-1"
                       />
-                      {uploading && <Loader2 className="h-4 w-4 animate-spin" />}
+                      {uploading && (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      )}
                     </div>
                     {previewUrl && (
-                      <div className="relative w-full h-48 border rounded-lg overflow-hidden">
+                      <div className="relative w-full h-48 border rounded-lg overflow-hidden bg-muted/50 flex items-center justify-center">
                         <img
                           src={previewUrl}
                           alt="Preview"
-                          className="w-full h-full object-cover"
+                          className="max-w-full max-h-full object-contain"
                         />
                       </div>
                     )}
@@ -445,7 +471,9 @@ export default function EventGalleryAdmin() {
                     disabled={!!selectedFile}
                   />
                   <p className="text-xs text-muted-foreground">
-                    {selectedFile ? "Clear the file upload to use URL" : "Provide an image URL if not uploading"}
+                    {selectedFile
+                      ? "Clear the file upload to use URL"
+                      : "Provide an image URL if not uploading"}
                   </p>
                 </div>
 
@@ -492,7 +520,10 @@ export default function EventGalleryAdmin() {
                       type="number"
                       value={formData.sort_order}
                       onChange={(e) =>
-                        setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })
+                        setFormData({
+                          ...formData,
+                          sort_order: parseInt(e.target.value) || 0,
+                        })
                       }
                     />
                   </div>
@@ -519,8 +550,10 @@ export default function EventGalleryAdmin() {
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                         Uploading...
                       </>
+                    ) : editingItem ? (
+                      "Update"
                     ) : (
-                      editingItem ? "Update" : "Create"
+                      "Create"
                     )}
                   </Button>
                 </div>
@@ -529,11 +562,18 @@ export default function EventGalleryAdmin() {
           </Dialog>
         </div>
 
-        <Tabs value={selectedEventFilter} onValueChange={setSelectedEventFilter}>
+        <Tabs
+          value={selectedEventFilter}
+          onValueChange={setSelectedEventFilter}
+        >
           <TabsList className="mb-4">
             <TabsTrigger value="all">All Photos ({items.length})</TabsTrigger>
-            <TabsTrigger value="upcoming">Upcoming Events ({upcomingPhotosCount})</TabsTrigger>
-            <TabsTrigger value="past">Past Events ({pastPhotosCount})</TabsTrigger>
+            <TabsTrigger value="upcoming">
+              Upcoming Events ({upcomingPhotosCount})
+            </TabsTrigger>
+            <TabsTrigger value="past">
+              Past Events ({pastPhotosCount})
+            </TabsTrigger>
           </TabsList>
 
           <Card>
@@ -546,7 +586,9 @@ export default function EventGalleryAdmin() {
                 <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
                   <Image className="h-12 w-12 mb-4" />
                   <p>No event gallery items found</p>
-                  <p className="text-sm mt-2">Create an event first, then add photos to it</p>
+                  <p className="text-sm mt-2">
+                    Create an event first, then add photos to it
+                  </p>
                 </div>
               ) : (
                 <Table>
@@ -565,14 +607,18 @@ export default function EventGalleryAdmin() {
                     {filteredItems.map((item) => (
                       <TableRow key={item.id}>
                         <TableCell>
-                          <img
-                            src={item.image_url}
-                            alt={item.alt_text || "Gallery image"}
-                            className="w-16 h-16 object-cover rounded"
-                          />
+                          <div className="w-16 h-16 bg-muted/50 rounded flex items-center justify-center overflow-hidden">
+                            <img
+                              src={item.image_url}
+                              alt={item.alt_text || "Gallery image"}
+                              className="max-w-full max-h-full object-contain"
+                            />
+                          </div>
                         </TableCell>
                         <TableCell>{item.caption || "-"}</TableCell>
-                        <TableCell className="font-medium">{getEventTitle(item.event_id)}</TableCell>
+                        <TableCell className="font-medium">
+                          {getEventTitle(item.event_id)}
+                        </TableCell>
                         <TableCell>
                           {getEventStatus(item.event_id) && (
                             <span

@@ -342,11 +342,11 @@ export default function GalleryAdmin() {
                       )}
                     </div>
                     {previewUrl && (
-                      <div className="relative w-full h-48 border rounded-lg overflow-hidden">
+                      <div className="relative w-full h-48 border rounded-lg overflow-hidden bg-muted/50 flex items-center justify-center">
                         <img
                           src={previewUrl}
                           alt="Preview"
-                          className="w-full h-full object-cover"
+                          className="max-w-full max-h-full object-contain"
                         />
                       </div>
                     )}
@@ -518,11 +518,13 @@ export default function GalleryAdmin() {
                   {filteredItems.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell>
-                        <img
-                          src={item.image_url}
-                          alt={item.alt_text || "Gallery image"}
-                          className="w-16 h-16 object-cover rounded"
-                        />
+                        <div className="w-16 h-16 bg-muted/50 rounded flex items-center justify-center overflow-hidden">
+                          <img
+                            src={item.image_url}
+                            alt={item.alt_text || "Gallery image"}
+                            className="max-w-full max-h-full object-contain"
+                          />
+                        </div>
                       </TableCell>
                       <TableCell>{item.caption || "-"}</TableCell>
                       <TableCell>
