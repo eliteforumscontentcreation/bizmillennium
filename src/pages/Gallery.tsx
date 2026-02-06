@@ -22,24 +22,28 @@ interface Event {
 const Gallery = () => {
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
-  const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
-      // Fetch events that have gallery images
+      // Fetch events
       const { data: eventsData } = await supabase
         .from("events")
         .select("id, title, slug")
         .order("event_date", { ascending: false });
 
-      // Fetch gallery images
-      const { data: galleryData } = await supabase
+      // Fetch all active gallery images (both event-linked and site gallery)
+      const { data: galleryData, error } = await supabase
         .from("gallery")
         .select("*")
         .eq("is_active", true)
         .order("sort_order");
+
+      if (error) {
+        console.error("Error fetching gallery:", error);
+      }
 
       if (eventsData) {
         // Filter events that have gallery images
@@ -48,11 +52,6 @@ const Gallery = () => {
         );
         const eventsWithGallery = eventsData.filter((e) => eventIds.has(e.id));
         setEvents(eventsWithGallery);
-
-        // Auto-select first event if available
-        if (eventsWithGallery.length > 0) {
-          setSelectedEvent(eventsWithGallery[0].id);
-        }
       }
 
       if (galleryData) {
@@ -64,98 +63,19 @@ const Gallery = () => {
     fetchData();
   }, []);
 
-  // Fallback gallery items grouped by event
-  const fallbackEvents = [
-    { id: "event1", title: "CFO Connect #3", slug: "cfo-connect-3" },
-    { id: "event2", title: "CollaborateX #1", slug: "collaboratex-1" },
-    { id: "event3", title: "CX Dynamics #2", slug: "cx-dynamics-2" },
-    { id: "event4", title: "CFO Connect #4", slug: "cfo-connect-4" },
-    { id: "event5", title: "CIO Insights #3", slug: "cio-insights-3" },
-  ];
+  // Check if there are site gallery items (no event_id)
+  const hasSiteGallery = gallery.some((item) => !item.event_id);
 
-  const fallbackGallery: GalleryItem[] = [
-    {
-      id: "1",
-      image_url:
-        "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
-      caption: "Registration Desk",
-      alt_text: "Registration desk",
-      category: "Events",
-      event_id: "event1",
-    },
-    {
-      id: "2",
-      image_url:
-        "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800",
-      caption: "Networking Session",
-      alt_text: "Networking",
-      category: "Networking",
-      event_id: "event1",
-    },
-    {
-      id: "3",
-      image_url:
-        "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=800",
-      caption: "Keynote Session",
-      alt_text: "Keynote",
-      category: "Events",
-      event_id: "event1",
-    },
-    {
-      id: "4",
-      image_url:
-        "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800",
-      caption: "Panel Discussion",
-      alt_text: "Panel",
-      category: "Sessions",
-      event_id: "event2",
-    },
-    {
-      id: "5",
-      image_url:
-        "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800",
-      caption: "Speaker Presentation",
-      alt_text: "Speaker",
-      category: "Sessions",
-      event_id: "event2",
-    },
-    {
-      id: "6",
-      image_url:
-        "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800",
-      caption: "Award Ceremony",
-      alt_text: "Awards",
-      category: "Awards",
-      event_id: "event3",
-    },
-    {
-      id: "7",
-      image_url:
-        "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
-      caption: "Conference Hall",
-      alt_text: "Conference",
-      category: "Events",
-      event_id: "event4",
-    },
-    {
-      id: "8",
-      image_url:
-        "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800",
-      caption: "Team Building",
-      alt_text: "Team",
-      category: "Networking",
-      event_id: "event5",
-    },
-  ];
+  // Filter gallery based on selection
+  const filteredGallery =
+    selectedFilter === "all"
+      ? gallery
+      : selectedFilter === "site"
+        ? gallery.filter((item) => !item.event_id)
+        : gallery.filter((item) => item.event_id === selectedFilter);
 
-  const displayEvents = events.length > 0 ? events : fallbackEvents;
-  const displayGallery = gallery.length > 0 ? gallery : fallbackGallery;
-  const activeEventId = selectedEvent || displayEvents[0]?.id || null;
-
-  // Filter gallery by selected event
-  const filteredGallery = activeEventId
-    ? displayGallery.filter((item) => item.event_id === activeEventId)
-    : displayGallery;
+  // Get display items - if no data, show nothing (no fallbacks)
+  const displayGallery = filteredGallery;
 
   return (
     <Layout>
@@ -177,20 +97,49 @@ const Gallery = () => {
         </div>
       </section>
 
-      {/* Event Tabs */}
+      {/* Filter Tabs */}
       <section className="py-8 bg-background">
         <div className="container-wide">
           <div className="flex flex-wrap justify-center gap-3">
-            {displayEvents.map((event, index) => (
+            {/* All Photos Tab */}
+            <Button
+              variant={selectedFilter === "all" ? "default" : "outline"}
+              className={`rounded-full px-6 ${
+                selectedFilter === "all"
+                  ? "bg-primary text-primary-foreground"
+                  : "border-border hover:bg-muted"
+              }`}
+              onClick={() => setSelectedFilter("all")}
+            >
+              All Photos
+            </Button>
+
+            {/* Site Gallery Tab - only show if there are site gallery items */}
+            {hasSiteGallery && (
               <Button
-                key={event.id}
-                variant={activeEventId === event.id ? "default" : "outline"}
+                variant={selectedFilter === "site" ? "default" : "outline"}
                 className={`rounded-full px-6 ${
-                  activeEventId === event.id
+                  selectedFilter === "site"
                     ? "bg-primary text-primary-foreground"
                     : "border-border hover:bg-muted"
                 }`}
-                onClick={() => setSelectedEvent(event.id)}
+                onClick={() => setSelectedFilter("site")}
+              >
+                General Gallery
+              </Button>
+            )}
+
+            {/* Event Tabs */}
+            {events.map((event) => (
+              <Button
+                key={event.id}
+                variant={selectedFilter === event.id ? "default" : "outline"}
+                className={`rounded-full px-6 ${
+                  selectedFilter === event.id
+                    ? "bg-primary text-primary-foreground"
+                    : "border-border hover:bg-muted"
+                }`}
+                onClick={() => setSelectedFilter(event.id)}
               >
                 {event.title}
               </Button>
@@ -206,13 +155,13 @@ const Gallery = () => {
             <div className="flex items-center justify-center h-64">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
-          ) : filteredGallery.length === 0 ? (
+          ) : displayGallery.length === 0 ? (
             <div className="text-center py-16 text-muted-foreground">
-              No photos available for this event yet.
+              No photos available yet.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredGallery.map((item, index) => (
+              {displayGallery.map((item, index) => (
                 <div
                   key={item.id}
                   onClick={() => setSelectedImage(item)}
