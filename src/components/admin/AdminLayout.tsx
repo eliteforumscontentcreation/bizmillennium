@@ -20,6 +20,7 @@ import {
   FileText,
   Users,
   Image,
+  Images,
   MessageSquare,
   Settings,
   LogOut,
@@ -45,8 +46,13 @@ const menuItems = [
   { title: "Blogs", url: "/admin/blogs", icon: FileText },
   { title: "Blog Categories", url: "/admin/blog-categories", icon: Tag },
   { title: "Careers", url: "/admin/careers", icon: Briefcase },
-  { title: "Job Applications", url: "/admin/job-applications", icon: ClipboardList },
+  {
+    title: "Job Applications",
+    url: "/admin/job-applications",
+    icon: ClipboardList,
+  },
   { title: "Gallery", url: "/admin/gallery", icon: Image },
+  { title: "Event Gallery", url: "/admin/event-gallery", icon: Images },
   { title: "Hero Sections", url: "/admin/hero-sections", icon: ImageIcon },
   { title: "Testimonials", url: "/admin/testimonials", icon: MessageSquare },
   { title: "Partners", url: "/admin/partners", icon: Building2 },
@@ -55,9 +61,21 @@ const menuItems = [
   { title: "Statistics", url: "/admin/statistics", icon: BarChart3 },
   { title: "Navigation", url: "/admin/navigation", icon: Navigation },
   { title: "Pages", url: "/admin/pages", icon: FileText },
-  { title: "Contact Submissions", url: "/admin/contact-submissions", icon: Mail },
-  { title: "Service Contact Submissions", url: "/admin/service-contact-submissions", icon: Inbox },
-  { title: "Service Form Fields", url: "/admin/service-form-fields", icon: FormInput },
+  {
+    title: "Contact Submissions",
+    url: "/admin/contact-submissions",
+    icon: Mail,
+  },
+  {
+    title: "Service Contact Submissions",
+    url: "/admin/service-contact-submissions",
+    icon: Inbox,
+  },
+  {
+    title: "Service Form Fields",
+    url: "/admin/service-form-fields",
+    icon: FormInput,
+  },
   { title: "Users", url: "/admin/users", icon: Users },
   { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
@@ -109,7 +127,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 <img src={logo} alt="Biz Millennium" className="h-8 w-auto" />
               </div>
               <div className="flex flex-col leading-none">
-                <span className="text-sm font-semibold text-primary">Admin</span>
+                <span className="text-sm font-semibold text-primary">
+                  Admin
+                </span>
                 <span className="text-xs text-muted-foreground">Panel</span>
               </div>
             </Link>
@@ -155,7 +175,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <SidebarTrigger />
             <div className="ml-4">
               <h1 className="text-lg font-semibold text-foreground">
-                {menuItems.find((item) => item.url === location.pathname)?.title || "Admin"}
+                {menuItems.find((item) => item.url === location.pathname)
+                  ?.title || "Admin"}
               </h1>
             </div>
           </header>

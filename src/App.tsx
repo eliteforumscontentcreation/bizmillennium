@@ -35,6 +35,7 @@ import BlogCategoriesAdmin from "./pages/admin/BlogCategoriesAdmin";
 import CareersAdmin from "./pages/admin/CareersAdmin";
 import JobApplicationsAdmin from "./pages/admin/JobApplicationsAdmin";
 import GalleryAdmin from "./pages/admin/GalleryAdmin";
+import EventGalleryAdmin from "./pages/admin/EventGalleryAdmin";
 import TestimonialsAdmin from "./pages/admin/TestimonialsAdmin";
 import PartnersAdmin from "./pages/admin/PartnersAdmin";
 import DomainsAdmin from "./pages/admin/DomainsAdmin";
@@ -83,16 +84,26 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/auth" element={<Auth />} />
-            
+
             {/* Admin Routes */}
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/admin/events" element={<EventsAdmin />} />
             <Route path="/admin/event-types" element={<EventTypesAdmin />} />
             <Route path="/admin/blogs" element={<BlogsAdmin />} />
-            <Route path="/admin/blog-categories" element={<BlogCategoriesAdmin />} />
+            <Route
+              path="/admin/blog-categories"
+              element={<BlogCategoriesAdmin />}
+            />
             <Route path="/admin/careers" element={<CareersAdmin />} />
-            <Route path="/admin/job-applications" element={<JobApplicationsAdmin />} />
+            <Route
+              path="/admin/job-applications"
+              element={<JobApplicationsAdmin />}
+            />
             <Route path="/admin/gallery" element={<GalleryAdmin />} />
+            <Route
+              path="/admin/event-gallery"
+              element={<EventGalleryAdmin />}
+            />
             <Route path="/admin/testimonials" element={<TestimonialsAdmin />} />
             <Route path="/admin/partners" element={<PartnersAdmin />} />
             <Route path="/admin/domains" element={<DomainsAdmin />} />
@@ -101,12 +112,24 @@ const App = () => (
             <Route path="/admin/navigation" element={<NavigationAdmin />} />
             <Route path="/admin/statistics" element={<StatisticsAdmin />} />
             <Route path="/admin/brands" element={<BrandsAdmin />} />
-            <Route path="/admin/hero-sections" element={<HeroSectionsAdmin />} />
-            <Route path="/admin/contact-submissions" element={<ContactSubmissionsAdmin />} />
-            <Route path="/admin/service-contact-submissions" element={<ServiceContactSubmissionsAdmin />} />
-            <Route path="/admin/service-form-fields" element={<ServiceFormFieldsAdmin />} />
+            <Route
+              path="/admin/hero-sections"
+              element={<HeroSectionsAdmin />}
+            />
+            <Route
+              path="/admin/contact-submissions"
+              element={<ContactSubmissionsAdmin />}
+            />
+            <Route
+              path="/admin/service-contact-submissions"
+              element={<ServiceContactSubmissionsAdmin />}
+            />
+            <Route
+              path="/admin/service-form-fields"
+              element={<ServiceFormFieldsAdmin />}
+            />
             <Route path="/admin/pages" element={<PagesAdmin />} />
-            
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

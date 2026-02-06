@@ -23,7 +23,12 @@ const fallbackStats = [
 
 export function HeroSection() {
   const [stats, setStats] = useState<Statistic[]>([]);
-  const cyclingWords = ["Conferences", "Webinars", "Awards", "Data Intelligence"];
+  const cyclingWords = [
+    "Conferences",
+    "Webinars",
+    "Awards",
+    "Data Intelligence",
+  ];
   const cyclingText = useCyclingTypewriter(cyclingWords, 100, 50, 2000);
 
   useEffect(() => {
@@ -55,47 +60,51 @@ export function HeroSection() {
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-3 md:mb-4 hero-text-gradient">
               Biz Millennium
             </h1>
-            
-            {/* Cycling Typewriter Effect - "For [word]" - Reduced gap on mobile */}
-            <div className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 min-h-[3rem] md:min-h-[4rem] flex items-center justify-center">
+
+            {/* Cycling Typewriter Effect - "For [word]" - Same size as main title */}
+            <div className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 md:mb-8 min-h-[3rem] md:min-h-[4rem] flex items-center justify-center">
               <span className="text-black">For </span>
               <span className="ml-2 text-black">
                 {cyclingText}
                 <span className="inline-block w-0.5 h-8 md:h-10 bg-black ml-1 animate-pulse"></span>
               </span>
             </div>
-            
+
             {/* CTA Buttons - Black color */}
             <div className="flex flex-row items-center justify-center gap-3 mb-6 md:mb-8">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 variant="outline"
-                className="rounded-full px-6 md:px-8 text-sm md:text-base bg-black border-black text-white hover:bg-black/90"
+                className="rounded-full px-6 md:px-8 text-sm md:text-base bg-white border-black text-black hover:bg-gray-100"
                 asChild
               >
                 <Link to="/contact">Partner with Us</Link>
               </Button>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="rounded-full px-6 md:px-8 text-sm md:text-base bg-black text-white hover:bg-black/90"
                 asChild
               >
-                <a href="https://events.bizmillennium.com/" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://events.bizmillennium.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Upcoming Events
                 </a>
               </Button>
             </div>
-            
-            {/* Feature highlights */}
-            <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-6 text-muted-foreground text-sm sm:text-base">
+
+            {/* Feature highlights - Hidden on mobile */}
+            <div className="hidden sm:flex flex-row flex-wrap items-center justify-center gap-3 sm:gap-6 text-muted-foreground text-sm sm:text-base">
               <span>Custom Event Solutions</span>
-              <span className="hidden sm:inline text-yellow-500">★</span>
+              <span className="text-yellow-500">★</span>
               <span>Tailored Event Experiences</span>
-              <span className="hidden sm:inline text-yellow-500">★</span>
+              <span className="text-yellow-500">★</span>
               <span>Global Corporate Network</span>
             </div>
           </div>
-          
+
           {/* Stats Grid - Black color with less rounded corners */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mt-8 md:mt-12">
             {displayStats.map((stat) => (

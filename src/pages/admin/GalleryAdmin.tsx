@@ -27,76 +27,66 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Image, Upload, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Image, Loader2 } from "lucide-react";
 
-interface GalleryItem {
+interface SiteGalleryItem {
   id: string;
   image_url: string;
   alt_text: string | null;
   caption: string | null;
   category: string | null;
-  event_id: string | null;
   is_active: boolean;
   sort_order: number;
 }
 
-interface Event {
-  id: string;
-  title: string;
-  is_upcoming: boolean;
-}
+const GALLERY_CATEGORIES = [
+  "General",
+  "Office",
+  "Team",
+  "Achievements",
+  "Branding",
+  "Facilities",
+  "Other",
+];
 
 export default function GalleryAdmin() {
-  const [items, setItems] = useState<GalleryItem[]>([]);
-  const [events, setEvents] = useState<Event[]>([]);
+  const [items, setItems] = useState<SiteGalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
-  const [selectedEventFilter, setSelectedEventFilter] = useState<string>("all");
+  const [editingItem, setEditingItem] = useState<SiteGalleryItem | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     image_url: "",
     alt_text: "",
     caption: "",
-    category: "",
-    event_id: "",
+    category: "General",
     is_active: true,
     sort_order: 0,
   });
 
   useEffect(() => {
     fetchItems();
-    fetchEvents();
   }, []);
 
-  const fetchEvents = async () => {
-    const { data } = await supabase
-      .from("events")
-      .select("id, title, is_upcoming")
-      .order("event_date", { ascending: false });
-    
-    if (data) {
-      setEvents(data);
-    }
-  };
-
   const fetchItems = async () => {
+    // Fetch gallery items that are NOT linked to events (site gallery)
     const { data, error } = await supabase
       .from("gallery")
       .select("*")
+      .is("event_id", null)
       .order("sort_order", { ascending: true });
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to fetch gallery items",
+        description: "Failed to fetch site gallery items",
         variant: "destructive",
       });
     } else {
@@ -109,7 +99,7 @@ export default function GalleryAdmin() {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         toast({
           title: "Error",
           description: "Please select an image file",
@@ -129,7 +119,7 @@ export default function GalleryAdmin() {
       }
 
       setSelectedFile(file);
-      
+
       // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -142,18 +132,18 @@ export default function GalleryAdmin() {
   const uploadImage = async (file: File): Promise<string | null> => {
     try {
       setUploading(true);
-      
+
       // Generate unique filename
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split(".").pop();
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = `gallery/${fileName}`;
+      const filePath = `site-gallery/${fileName}`;
 
       // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
-        .from('images')
+        .from("images")
         .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
+          cacheControl: "3600",
+          upsert: false,
         });
 
       if (uploadError) {
@@ -161,16 +151,17 @@ export default function GalleryAdmin() {
       }
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('images')
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("images").getPublicUrl(filePath);
 
       return publicUrl;
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error("Upload error:", error);
       toast({
         title: "Upload Error",
-        description: error instanceof Error ? error.message : "Failed to upload image",
+        description:
+          error instanceof Error ? error.message : "Failed to upload image",
         variant: "destructive",
       });
       return null;
@@ -181,15 +172,6 @@ export default function GalleryAdmin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!formData.event_id) {
-      toast({
-        title: "Error",
-        description: "Please select an event for this photo",
-        variant: "destructive",
-      });
-      return;
-    }
 
     let imageUrl = formData.image_url;
 
@@ -212,9 +194,13 @@ export default function GalleryAdmin() {
     }
 
     const submitData = {
-      ...formData,
       image_url: imageUrl,
-      event_id: formData.event_id || null,
+      alt_text: formData.alt_text || null,
+      caption: formData.caption || null,
+      category: formData.category || "General",
+      is_active: formData.is_active,
+      sort_order: formData.sort_order,
+      event_id: null, // Site gallery items have no event_id
     };
 
     if (editingItem) {
@@ -230,7 +216,10 @@ export default function GalleryAdmin() {
           variant: "destructive",
         });
       } else {
-        toast({ title: "Success", description: "Gallery item updated successfully" });
+        toast({
+          title: "Success",
+          description: "Gallery item updated successfully",
+        });
         fetchItems();
         resetForm();
       }
@@ -244,21 +233,23 @@ export default function GalleryAdmin() {
           variant: "destructive",
         });
       } else {
-        toast({ title: "Success", description: "Gallery item created successfully" });
+        toast({
+          title: "Success",
+          description: "Gallery item created successfully",
+        });
         fetchItems();
         resetForm();
       }
     }
   };
 
-  const handleEdit = (item: GalleryItem) => {
+  const handleEdit = (item: SiteGalleryItem) => {
     setEditingItem(item);
     setFormData({
       image_url: item.image_url,
       alt_text: item.alt_text || "",
       caption: item.caption || "",
-      category: item.category || "",
-      event_id: item.event_id || "",
+      category: item.category || "General",
       is_active: item.is_active,
       sort_order: item.sort_order,
     });
@@ -278,7 +269,10 @@ export default function GalleryAdmin() {
         variant: "destructive",
       });
     } else {
-      toast({ title: "Success", description: "Gallery item deleted successfully" });
+      toast({
+        title: "Success",
+        description: "Gallery item deleted successfully",
+      });
       fetchItems();
     }
   };
@@ -288,8 +282,7 @@ export default function GalleryAdmin() {
       image_url: "",
       alt_text: "",
       caption: "",
-      category: "",
-      event_id: "",
+      category: "General",
       is_active: true,
       sort_order: 0,
     });
@@ -299,50 +292,24 @@ export default function GalleryAdmin() {
     setIsDialogOpen(false);
   };
 
-  const getEventTitle = (eventId: string | null) => {
-    if (!eventId) return "No Event";
-    const event = events.find(e => e.id === eventId);
-    return event?.title || "Unknown Event";
-  };
+  const filteredItems =
+    categoryFilter === "all"
+      ? items
+      : items.filter((item) => item.category === categoryFilter);
 
-  const getEventStatus = (eventId: string | null) => {
-    if (!eventId) return null;
-    const event = events.find(e => e.id === eventId);
-    return event?.is_upcoming ? "Upcoming" : "Past";
-  };
-
-  const filteredItems = selectedEventFilter === "all" 
-    ? items 
-    : selectedEventFilter === "upcoming"
-    ? items.filter(item => {
-        const event = events.find(e => e.id === item.event_id);
-        return event?.is_upcoming === true;
-      })
-    : selectedEventFilter === "past"
-    ? items.filter(item => {
-        const event = events.find(e => e.id === item.event_id);
-        return event?.is_upcoming === false;
-      })
-    : items.filter(item => item.event_id === selectedEventFilter);
-
-  const upcomingEvents = events.filter(e => e.is_upcoming);
-  const pastEvents = events.filter(e => !e.is_upcoming);
-  const upcomingPhotosCount = items.filter(item => {
-    const event = events.find(e => e.id === item.event_id);
-    return event?.is_upcoming === true;
-  }).length;
-  const pastPhotosCount = items.filter(item => {
-    const event = events.find(e => e.id === item.event_id);
-    return event?.is_upcoming === false;
-  }).length;
+  const uniqueCategories = [
+    ...new Set(items.map((item) => item.category).filter(Boolean)),
+  ];
 
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Gallery Management</h2>
-            <p className="text-muted-foreground">Add photos to both upcoming and past events</p>
+            <h2 className="text-2xl font-bold text-foreground">Site Gallery</h2>
+            <p className="text-muted-foreground">
+              Manage general website photos (not tied to events)
+            </p>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -355,54 +322,10 @@ export default function GalleryAdmin() {
             <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
-                  {editingItem ? "Edit Photo" : "Add Photo to Event"}
+                  {editingItem ? "Edit Photo" : "Add Photo to Site Gallery"}
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="event_id">Select Event *</Label>
-                  <Select
-                    value={formData.event_id || ""}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, event_id: value })
-                    }
-                    required
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose an event (upcoming or past)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {upcomingEvents.length > 0 && (
-                        <>
-                          <SelectItem value="__upcoming_header__" disabled className="font-semibold text-accent">
-                            Upcoming Events
-                          </SelectItem>
-                          {upcomingEvents.map((event) => (
-                            <SelectItem key={event.id} value={event.id}>
-                              {event.title}
-                            </SelectItem>
-                          ))}
-                        </>
-                      )}
-                      {pastEvents.length > 0 && (
-                        <>
-                          <SelectItem value="__past_header__" disabled className="font-semibold text-muted-foreground">
-                            Past Events
-                          </SelectItem>
-                          {pastEvents.map((event) => (
-                            <SelectItem key={event.id} value={event.id}>
-                              {event.title}
-                            </SelectItem>
-                          ))}
-                        </>
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    You can add photos to both upcoming and past events
-                  </p>
-                </div>
-
                 <div className="space-y-2">
                   <Label>Upload Image</Label>
                   <div className="flex flex-col gap-3">
@@ -414,7 +337,9 @@ export default function GalleryAdmin() {
                         disabled={uploading}
                         className="flex-1"
                       />
-                      {uploading && <Loader2 className="h-4 w-4 animate-spin" />}
+                      {uploading && (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      )}
                     </div>
                     {previewUrl && (
                       <div className="relative w-full h-48 border rounded-lg overflow-hidden">
@@ -439,11 +364,13 @@ export default function GalleryAdmin() {
                     onChange={(e) =>
                       setFormData({ ...formData, image_url: e.target.value })
                     }
-                    placeholder="/images/photo1770018880.jpg or https://..."
+                    placeholder="/images/photo.jpg or https://..."
                     disabled={!!selectedFile}
                   />
                   <p className="text-xs text-muted-foreground">
-                    {selectedFile ? "Clear the file upload to use URL" : "Provide an image URL if not uploading"}
+                    {selectedFile
+                      ? "Clear the file upload to use URL"
+                      : "Provide an image URL if not uploading"}
                   </p>
                 </div>
 
@@ -474,14 +401,23 @@ export default function GalleryAdmin() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
-                    <Input
-                      id="category"
+                    <Select
                       value={formData.category}
-                      onChange={(e) =>
-                        setFormData({ ...formData, category: e.target.value })
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, category: value })
                       }
-                      placeholder="e.g., Networking"
-                    />
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {GALLERY_CATEGORIES.map((cat) => (
+                          <SelectItem key={cat} value={cat}>
+                            {cat}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="sort_order">Sort Order</Label>
@@ -490,7 +426,10 @@ export default function GalleryAdmin() {
                       type="number"
                       value={formData.sort_order}
                       onChange={(e) =>
-                        setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })
+                        setFormData({
+                          ...formData,
+                          sort_order: parseInt(e.target.value) || 0,
+                        })
                       }
                     />
                   </div>
@@ -517,8 +456,10 @@ export default function GalleryAdmin() {
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                         Uploading...
                       </>
+                    ) : editingItem ? (
+                      "Update"
                     ) : (
-                      editingItem ? "Update" : "Create"
+                      "Create"
                     )}
                   </Button>
                 </div>
@@ -527,102 +468,106 @@ export default function GalleryAdmin() {
           </Dialog>
         </div>
 
-        <Tabs value={selectedEventFilter} onValueChange={setSelectedEventFilter}>
-          <TabsList className="mb-4">
-            <TabsTrigger value="all">All Photos ({items.length})</TabsTrigger>
-            <TabsTrigger value="upcoming">Upcoming Events ({upcomingPhotosCount})</TabsTrigger>
-            <TabsTrigger value="past">Past Events ({pastPhotosCount})</TabsTrigger>
-          </TabsList>
+        {/* Category Filter */}
+        <div className="flex items-center gap-4">
+          <Label>Filter by Category:</Label>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                All Categories ({items.length})
+              </SelectItem>
+              {uniqueCategories.map((cat) => (
+                <SelectItem key={cat} value={cat || "uncategorized"}>
+                  {cat} ({items.filter((i) => i.category === cat).length})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-          <Card>
-            <CardContent className="p-0">
-              {loading ? (
-                <div className="flex items-center justify-center h-64">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-              ) : filteredItems.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-                  <Image className="h-12 w-12 mb-4" />
-                  <p>No gallery items found</p>
-                  <p className="text-sm mt-2">Create an event first, then add photos to it</p>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Preview</TableHead>
-                      <TableHead>Caption</TableHead>
-                      <TableHead>Event</TableHead>
-                      <TableHead>Event Status</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="w-[100px]">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredItems.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell>
-                          <img
-                            src={item.image_url}
-                            alt={item.alt_text || "Gallery image"}
-                            className="w-16 h-16 object-cover rounded"
-                          />
-                        </TableCell>
-                        <TableCell>{item.caption || "-"}</TableCell>
-                        <TableCell className="font-medium">{getEventTitle(item.event_id)}</TableCell>
-                        <TableCell>
-                          {getEventStatus(item.event_id) && (
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs ${
-                                getEventStatus(item.event_id) === "Upcoming"
-                                  ? "bg-accent/10 text-accent"
-                                  : "bg-muted text-muted-foreground"
-                              }`}
-                            >
-                              {getEventStatus(item.event_id)}
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell>{item.category || "-"}</TableCell>
-                        <TableCell>
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs ${
-                              item.is_active
-                                ? "bg-green-100 text-green-700"
-                                : "bg-muted text-muted-foreground"
-                            }`}
+        <Card>
+          <CardContent className="p-0">
+            {loading ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : filteredItems.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+                <Image className="h-12 w-12 mb-4" />
+                <p>No site gallery items found</p>
+                <p className="text-sm mt-2">
+                  Add photos to showcase on your website
+                </p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Preview</TableHead>
+                    <TableHead>Caption</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Sort Order</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="w-[100px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredItems.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell>
+                        <img
+                          src={item.image_url}
+                          alt={item.alt_text || "Gallery image"}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      </TableCell>
+                      <TableCell>{item.caption || "-"}</TableCell>
+                      <TableCell>
+                        <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700">
+                          {item.category || "Uncategorized"}
+                        </span>
+                      </TableCell>
+                      <TableCell>{item.sort_order}</TableCell>
+                      <TableCell>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${
+                            item.is_active
+                              ? "bg-green-100 text-green-700"
+                              : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {item.is_active ? "Active" : "Inactive"}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(item)}
                           >
-                            {item.is_active ? "Active" : "Inactive"}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleEdit(item)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDelete(item.id)}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </Tabs>
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(item.id)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
