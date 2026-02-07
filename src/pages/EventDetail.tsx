@@ -184,14 +184,14 @@ const EventDetail = () => {
               )}
             </div>
 
-            {event.registration_url && event.is_upcoming && (
+            {event.registration_url && (
               <Button size="lg" asChild className="gap-2">
                 <a
                   href={event.registration_url}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Register Now
+                  {event.is_upcoming ? "Register Now" : "View Event"}
                   <ExternalLink className="h-4 w-4" />
                 </a>
               </Button>
@@ -219,11 +219,15 @@ const EventDetail = () => {
               </div>
             )}
 
-            {event.registration_url && event.is_upcoming && (
+            {event.registration_url && (
               <div className="bg-primary text-primary-foreground rounded-xl p-8 text-center mb-12">
-                <h3 className="text-2xl font-bold mb-4">Ready to Join?</h3>
+                <h3 className="text-2xl font-bold mb-4">
+                  {event.is_upcoming ? "Ready to Join?" : "View This Event"}
+                </h3>
                 <p className="text-primary-foreground/80 mb-6">
-                  Secure your spot at this exclusive event today.
+                  {event.is_upcoming
+                    ? "Secure your spot at this exclusive event today."
+                    : "Check out more details about this event."}
                 </p>
                 <Button size="lg" variant="secondary" asChild className="gap-2">
                   <a
@@ -231,7 +235,7 @@ const EventDetail = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Register Now
+                    {event.is_upcoming ? "Register Now" : "View Event"}
                     <ExternalLink className="h-4 w-4" />
                   </a>
                 </Button>

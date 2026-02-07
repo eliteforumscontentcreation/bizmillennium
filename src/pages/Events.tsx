@@ -67,7 +67,7 @@ const Events = () => {
       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800";
 
     return (
-      <div className="group bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+      <div className="group bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
         {/* Image - full width, auto height to show complete image */}
         <Link to={`/events/${event.slug}`} className="block">
           <div className="overflow-hidden bg-muted">
@@ -159,6 +159,22 @@ const Events = () => {
                 </a>
               </Button>
             )}
+            {event.registration_url && !event.is_upcoming && (
+              <Button
+                size="sm"
+                asChild
+                className="flex-1 gap-1 bg-black text-white hover:bg-black/90"
+              >
+                <a
+                  href={event.registration_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View Event
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -203,12 +219,8 @@ const Events = () => {
           ) : (
             <Tabs defaultValue="upcoming" className="w-full">
               <TabsList className="mb-8">
-                <TabsTrigger value="upcoming">
-                  Upcoming Events ({upcomingEvents.length})
-                </TabsTrigger>
-                <TabsTrigger value="past">
-                  Past Events ({pastEvents.length})
-                </TabsTrigger>
+                <TabsTrigger value="upcoming">Upcoming Events</TabsTrigger>
+                <TabsTrigger value="past">Past Events</TabsTrigger>
               </TabsList>
 
               <TabsContent value="upcoming">
