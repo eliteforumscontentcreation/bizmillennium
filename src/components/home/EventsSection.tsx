@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,29 +18,41 @@ interface Event {
   is_upcoming: boolean;
 }
 
+// Helper function to check if an event is upcoming based on its date
+const isEventUpcoming = (eventDate: string | null): boolean => {
+  if (!eventDate) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Reset time to start of day
+  const eventDateObj = new Date(eventDate);
+  eventDateObj.setHours(0, 0, 0, 0);
+  return eventDateObj >= today;
+};
+
 export function EventsSection() {
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [pastEvents, setPastEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchEvents() {
-      const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .order("event_date", { ascending: false })
-        .limit(6);
+  const fetchEvents = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("events")
+      .select("*")
+      .order("event_date", { ascending: false })
+      .limit(6);
 
-      if (!error && data) {
-        const upcoming = data.filter((e) => e.is_upcoming);
-        const past = data.filter((e) => !e.is_upcoming);
-        setUpcomingEvents(upcoming);
-        setPastEvents(past);
-      }
-      setLoading(false);
+    if (!error && data) {
+      // Automatically categorize events based on event_date
+      const upcoming = data.filter((e) => isEventUpcoming(e.event_date));
+      const past = data.filter((e) => !isEventUpcoming(e.event_date));
+      setUpcomingEvents(upcoming);
+      setPastEvents(past);
     }
-    fetchEvents();
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
 
   if (loading) {
     return (
@@ -63,6 +75,9 @@ export function EventsSection() {
   }
 
   const EventCard = ({ event }: { event: Event }) => {
+    // Determine if event is upcoming based on date (not the is_upcoming field)
+    const upcoming = isEventUpcoming(event.event_date);
+    
     // Handle card click - redirect to registration URL if available
     const handleCardClick = () => {
       if (event.registration_url) {
@@ -94,12 +109,12 @@ export function EventsSection() {
           {/* Badge */}
           <span
             className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3 ${
-              event.is_upcoming
+              upcoming
                 ? "bg-accent/10 text-accent"
                 : "bg-muted text-muted-foreground"
             }`}
           >
-            {event.is_upcoming ? "Upcoming" : "Past Event"}
+            {upcoming ? "Upcoming" : "Past Event"}
           </span>
 
           {/* Title */}

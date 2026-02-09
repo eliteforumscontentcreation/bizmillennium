@@ -3,15 +3,66 @@ import { Layout } from "@/components/layout";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+interface GalleryItem {
+  id: string;
+  image_url: string;
+  caption: string | null;
+  alt_text: string | null;
+  category: string | null;
+  event_id: string | null;
+  is_active: boolean;
+  sort_order: number | null;
+}
+
+interface EventItem {
+  id: string;
+  title: string;
+  slug: string;
+  is_upcoming: boolean;
+}
+
+interface QueryResult<T> {
+  count: number;
+  error?: string;
+  data: T[] | null;
+}
+
+interface GalleryByEvent {
+  [key: string]: Array<{
+    id: string;
+    caption: string | null;
+    is_active: boolean;
+  }>;
+}
+
+interface DebugInfo {
+  timestamp: string;
+  queries: {
+    allGallery: QueryResult<GalleryItem>;
+    activeGallery: QueryResult<GalleryItem>;
+    allEvents: QueryResult<EventItem>;
+    eventsWithGallery?: {
+      count: number;
+      eventIds: string[];
+      data: EventItem[];
+    };
+    galleryByEvent?: GalleryByEvent;
+  };
+}
+
 export default function GalleryDebug() {
-  const [debug, setDebug] = useState<any>(null);
+  const [debug, setDebug] = useState<DebugInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchDebugData() {
-      const debugInfo: any = {
+      const debugInfo: DebugInfo = {
         timestamp: new Date().toISOString(),
-        queries: {}
+        queries: {
+          allGallery: { count: 0, data: null },
+          activeGallery: { count: 0, data: null },
+          allEvents: { count: 0, data: null },
+        }
       };
 
       // Query 1: All gallery items (no filters)
@@ -53,14 +104,14 @@ export default function GalleryDebug() {
         const eventsWithGallery = allEvents.filter(e => eventIds.has(e.id));
         debugInfo.queries.eventsWithGallery = {
           count: eventsWithGallery.length,
-          eventIds: Array.from(eventIds),
+          eventIds: Array.from(eventIds) as string[],
           data: eventsWithGallery
         };
       }
 
       // Query 5: Gallery items grouped by event
       if (activeGallery) {
-        const byEvent: any = {};
+        const byEvent: GalleryByEvent = {};
         activeGallery.forEach(item => {
           const eventId = item.event_id || 'no-event';
           if (!byEvent[eventId]) {

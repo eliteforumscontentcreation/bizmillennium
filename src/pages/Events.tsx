@@ -1,5 +1,5 @@
 import { Layout } from "@/components/layout";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, MapPin } from "lucide-react";
@@ -21,50 +21,57 @@ interface Event {
   is_featured: boolean;
 }
 
+// Helper function to check if an event is upcoming based on its date
+const isEventUpcoming = (eventDate: string | null): boolean => {
+  if (!eventDate) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Reset time to start of day
+  const eventDateObj = new Date(eventDate);
+  eventDateObj.setHours(0, 0, 0, 0);
+  return eventDateObj >= today;
+};
+
 const Events = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchEvents() {
-      try {
-        const { data, error } = await supabase
-          .from("events")
-          .select("*")
-          .order("event_date", { ascending: false });
+  const fetchEvents = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .order("event_date", { ascending: false });
 
-        if (error) {
-          console.error("Error fetching events:", error);
-          setError(error.message);
-        } else if (data) {
-          console.log("Fetched events:", data);
-          console.log(
-            "Featured images:",
-            data.map((e) => ({
-              title: e.title,
-              featured_image: e.featured_image,
-            })),
-          );
-          setEvents(data);
-        }
-      } catch (err) {
-        console.error("Unexpected error:", err);
-        setError("An unexpected error occurred while loading events");
-      } finally {
-        setLoading(false);
+      if (error) {
+        console.error("Error fetching events:", error);
+        setError(error.message);
+      } else if (data) {
+        setEvents(data);
       }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setError("An unexpected error occurred while loading events");
+    } finally {
+      setLoading(false);
     }
-    fetchEvents();
   }, []);
 
-  const upcomingEvents = events.filter((e) => e.is_upcoming);
-  const pastEvents = events.filter((e) => !e.is_upcoming);
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
+
+  // Automatically categorize events based on event_date
+  const upcomingEvents = events.filter((e) => isEventUpcoming(e.event_date));
+  const pastEvents = events.filter((e) => !isEventUpcoming(e.event_date));
 
   const EventCard = ({ event }: { event: Event }) => {
     const imageUrl =
       event.featured_image ||
       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800";
+
+    // Determine if event is upcoming based on date (not the is_upcoming field)
+    const upcoming = isEventUpcoming(event.event_date);
 
     // Handle card click - redirect to registration URL if available
     const handleCardClick = () => {
@@ -99,12 +106,12 @@ const Events = () => {
           {/* Badge */}
           <span
             className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3 ${
-              event.is_upcoming
+              upcoming
                 ? "bg-accent/10 text-accent"
                 : "bg-muted text-muted-foreground"
             }`}
           >
-            {event.is_upcoming ? "Upcoming" : "Past Event"}
+            {upcoming ? "Upcoming" : "Past Event"}
           </span>
 
           {/* Title */}
