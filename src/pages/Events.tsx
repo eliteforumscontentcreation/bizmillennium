@@ -2,7 +2,7 @@ import { Layout } from "@/components/layout";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, MapPin, ExternalLink } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -66,23 +66,33 @@ const Events = () => {
       event.featured_image ||
       "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800";
 
+    // Handle card click - redirect to registration URL if available
+    const handleCardClick = () => {
+      if (event.registration_url) {
+        window.open(event.registration_url, "_blank", "noopener,noreferrer");
+      }
+    };
+
     return (
-      <div className="group bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+      <div
+        onClick={handleCardClick}
+        className={`group bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ${
+          event.registration_url ? "cursor-pointer" : ""
+        }`}
+      >
         {/* Image - full width, auto height to show complete image */}
-        <Link to={`/events/${event.slug}`} className="block">
-          <div className="overflow-hidden bg-muted">
-            <img
-              src={imageUrl}
-              alt={event.title}
-              className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
-              onError={(e) => {
-                console.error("Image failed to load:", imageUrl);
-                (e.target as HTMLImageElement).src =
-                  "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800";
-              }}
-            />
-          </div>
-        </Link>
+        <div className="overflow-hidden bg-muted">
+          <img
+            src={imageUrl}
+            alt={event.title}
+            className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
+            onError={(e) => {
+              console.error("Image failed to load:", imageUrl);
+              (e.target as HTMLImageElement).src =
+                "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800";
+            }}
+          />
+        </div>
 
         {/* Content */}
         <div className="p-5">
@@ -98,11 +108,9 @@ const Events = () => {
           </span>
 
           {/* Title */}
-          <Link to={`/events/${event.slug}`}>
-            <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-accent transition-colors line-clamp-2">
-              {event.title}
-            </h3>
-          </Link>
+          <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-accent transition-colors line-clamp-2">
+            {event.title}
+          </h3>
 
           {/* Description */}
           {event.description && (
@@ -121,7 +129,7 @@ const Events = () => {
 
           {/* Date - in accent color */}
           {event.event_date && (
-            <div className="flex items-center gap-2 text-sm text-pink-600 font-medium mb-4">
+            <div className="flex items-center gap-2 text-sm text-pink-600 font-medium">
               <Calendar className="h-4 w-4" />
               <span>
                 {new Date(event.event_date).toLocaleDateString("en-US", {
@@ -132,50 +140,6 @@ const Events = () => {
               </span>
             </div>
           )}
-
-          {/* Buttons */}
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              asChild
-              className="flex-1 bg-black text-white hover:bg-black/90 border-black"
-            >
-              <Link to={`/events/${event.slug}`}>View Details</Link>
-            </Button>
-            {event.registration_url && event.is_upcoming && (
-              <Button
-                size="sm"
-                asChild
-                className="flex-1 gap-1 bg-black text-white hover:bg-black/90"
-              >
-                <a
-                  href={event.registration_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Register
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              </Button>
-            )}
-            {event.registration_url && !event.is_upcoming && (
-              <Button
-                size="sm"
-                asChild
-                className="flex-1 gap-1 bg-black text-white hover:bg-black/90"
-              >
-                <a
-                  href={event.registration_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View Event
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              </Button>
-            )}
-          </div>
         </div>
       </div>
     );

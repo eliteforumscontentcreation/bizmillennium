@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, MapPin, ExternalLink } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
@@ -62,10 +62,22 @@ export function EventsSection() {
     return null;
   }
 
-  const EventCard = ({ event }: { event: Event }) => (
-    <div className="group bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
-      {/* Image - full width, auto height to show complete image */}
-      <Link to={`/events/${event.slug}`} className="block">
+  const EventCard = ({ event }: { event: Event }) => {
+    // Handle card click - redirect to registration URL if available
+    const handleCardClick = () => {
+      if (event.registration_url) {
+        window.open(event.registration_url, "_blank", "noopener,noreferrer");
+      }
+    };
+
+    return (
+      <div
+        onClick={handleCardClick}
+        className={`group bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ${
+          event.registration_url ? "cursor-pointer" : ""
+        }`}
+      >
+        {/* Image - full width, auto height to show complete image */}
         <div className="overflow-hidden bg-muted">
           <img
             src={
@@ -76,103 +88,57 @@ export function EventsSection() {
             className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
           />
         </div>
-      </Link>
 
-      {/* Content */}
-      <div className="p-5">
-        {/* Badge */}
-        <span
-          className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3 ${
-            event.is_upcoming
-              ? "bg-accent/10 text-accent"
-              : "bg-muted text-muted-foreground"
-          }`}
-        >
-          {event.is_upcoming ? "Upcoming" : "Past Event"}
-        </span>
+        {/* Content */}
+        <div className="p-5">
+          {/* Badge */}
+          <span
+            className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3 ${
+              event.is_upcoming
+                ? "bg-accent/10 text-accent"
+                : "bg-muted text-muted-foreground"
+            }`}
+          >
+            {event.is_upcoming ? "Upcoming" : "Past Event"}
+          </span>
 
-        {/* Title */}
-        <Link to={`/events/${event.slug}`}>
+          {/* Title */}
           <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-accent transition-colors line-clamp-2">
             {event.title}
           </h3>
-        </Link>
 
-        {/* Description */}
-        {event.description && (
-          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-            {event.description}
-          </p>
-        )}
-
-        {/* Location */}
-        {event.location && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-            <MapPin className="h-4 w-4" />
-            <span>{event.location}</span>
-          </div>
-        )}
-
-        {/* Date - in accent color */}
-        {event.event_date && (
-          <div className="flex items-center gap-2 text-sm text-pink-600 font-medium mb-4">
-            <Calendar className="h-4 w-4" />
-            <span>
-              {new Date(event.event_date).toLocaleDateString("en-US", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </span>
-          </div>
-        )}
-
-        {/* Buttons */}
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            asChild
-            className="flex-1 bg-black text-white hover:bg-black/90 border-black"
-          >
-            <Link to={`/events/${event.slug}`}>View Details</Link>
-          </Button>
-          {event.registration_url && event.is_upcoming && (
-            <Button
-              size="sm"
-              asChild
-              className="flex-1 gap-1 bg-black text-white hover:bg-black/90"
-            >
-              <a
-                href={event.registration_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Register
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            </Button>
+          {/* Description */}
+          {event.description && (
+            <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+              {event.description}
+            </p>
           )}
-          {event.registration_url && !event.is_upcoming && (
-            <Button
-              size="sm"
-              asChild
-              className="flex-1 gap-1 bg-black text-white hover:bg-black/90"
-            >
-              <a
-                href={event.registration_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View Event
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            </Button>
+
+          {/* Location */}
+          {event.location && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+              <MapPin className="h-4 w-4" />
+              <span>{event.location}</span>
+            </div>
+          )}
+
+          {/* Date - in accent color */}
+          {event.event_date && (
+            <div className="flex items-center gap-2 text-sm text-pink-600 font-medium">
+              <Calendar className="h-4 w-4" />
+              <span>
+                {new Date(event.event_date).toLocaleDateString("en-US", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
           )}
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <section
