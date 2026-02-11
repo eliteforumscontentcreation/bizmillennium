@@ -37,8 +37,7 @@ export function EventsSection() {
     const { data, error } = await supabase
       .from("events")
       .select("*")
-      .order("event_date", { ascending: false })
-      .limit(6);
+      .order("event_date", { ascending: false });
 
     if (!error && data) {
       // Automatically categorize events based on event_date
@@ -49,6 +48,12 @@ export function EventsSection() {
       upcoming.sort((a, b) => {
         if (!a.event_date || !b.event_date) return 0;
         return new Date(a.event_date).getTime() - new Date(b.event_date).getTime();
+      });
+      
+      // Sort past events in descending order (most recent first)
+      past.sort((a, b) => {
+        if (!a.event_date || !b.event_date) return 0;
+        return new Date(b.event_date).getTime() - new Date(a.event_date).getTime();
       });
       
       setUpcomingEvents(upcoming);
