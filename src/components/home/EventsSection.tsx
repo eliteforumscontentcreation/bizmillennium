@@ -44,6 +44,13 @@ export function EventsSection() {
       // Automatically categorize events based on event_date
       const upcoming = data.filter((e) => isEventUpcoming(e.event_date));
       const past = data.filter((e) => !isEventUpcoming(e.event_date));
+      
+      // Sort upcoming events in ascending order (earliest first)
+      upcoming.sort((a, b) => {
+        if (!a.event_date || !b.event_date) return 0;
+        return new Date(a.event_date).getTime() - new Date(b.event_date).getTime();
+      });
+      
       setUpcomingEvents(upcoming);
       setPastEvents(past);
     }
