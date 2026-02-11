@@ -85,13 +85,7 @@ export function HeroSection() {
                 className="rounded-full px-5 md:px-8 text-sm md:text-base bg-black text-white hover:bg-black/90"
                 asChild
               >
-                <a
-                  href="https://events.bizmillennium.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Upcoming Events
-                </a>
+                <Link to="/events">Upcoming Events</Link>
               </Button>
             </div>
 
