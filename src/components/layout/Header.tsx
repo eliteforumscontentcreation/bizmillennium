@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import logo from "@/assets/logo.png";
+import logo from "@/images/Logo.jpg";
 
 // About BM items with icons
 const fallbackAboutItems = [
@@ -61,8 +61,8 @@ export function Header() {
             <img src={logo} alt="Biz Millennium" className="h-10 w-auto" />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          {/* Desktop Navigation - moved more to the right */}
+          <nav className="hidden md:flex items-center gap-8 ml-auto mr-8">
             {/* About Dropdown */}
             <div 
               className="relative"
