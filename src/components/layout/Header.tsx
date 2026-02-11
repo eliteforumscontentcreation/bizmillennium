@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import logo from "@/assets/logo.png";
 
 // About BM items with icons
 const fallbackAboutItems = [
@@ -57,7 +58,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src="/logo.png" alt="Biz Millennium" className="h-10 w-auto" />
+            <img src={logo} alt="Biz Millennium" className="h-10 w-auto" />
           </Link>
 
           {/* Desktop Navigation - moved more to the right */}
