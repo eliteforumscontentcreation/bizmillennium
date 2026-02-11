@@ -1,213 +1,201 @@
-# Biz Millennium
+# Biz Millennium Website
 
-A modern, full-featured event management and corporate website built with React, TypeScript, and Supabase.
+A modern, full-featured business conference and events platform built with React, TypeScript, and Supabase.
 
 ## 🚀 Features
 
-- **Event Management** - Create and manage conferences, roundtables, and in-house events
-- **Blog System** - Full CMS with categories, SEO, and rich content
-- **Career Portal** - Job listings with application forms
-- **Gallery** - Image gallery with categories and events
-- **Testimonials** - Customer testimonials showcase
-- **Partners & Brands** - Partner and brand logo management
-- **Dynamic Pages** - CMS-powered dynamic pages
-- **Admin Dashboard** - Full admin panel for content management
-- **Authentication** - Secure user authentication with role-based access
+### Core Functionality
+- **Dynamic Event Management**: Upcoming and past events with automatic date-based categorization
+- **Blog System**: Full-featured blog with categories, featured posts, and individual article pages
+- **Event Gallery**: Photo galleries linked to specific events with lightbox viewing
+- **Career Portal**: Job listings with custom application forms
+- **Contact System**: Multi-form contact system for general inquiries and service-specific requests
+- **Admin Dashboard**: Comprehensive CMS for managing all content
+
+### Recent Updates (February 2026)
+- ✅ **Favicon Updated**: New custom favicon reflecting Biz Millennium branding
+- ✅ **Zoho Chatbot Integration**: Hovering chatbot widget across all pages
+- ✅ **Events Sorting Fixed**: 
+  - Upcoming events sorted in ascending order (earliest first)
+  - Past events sorted in descending order (most recent first)
+  - Applied to both homepage and events page
+- ✅ **Blog Detail Pages**: Individual blog post pages with full content display
+- ✅ **Navigation Improvements**: 
+  - "Upcoming Events" button redirects to internal events page
+  - Navbar tabs aligned more to the right for better visual balance
+- ✅ **Logo Display Fixed**: Corrected logo import path in header component
+
+### Design System
+- **Typography**: Poppins font family with multiple weights
+- **Color Scheme**: Purple-cyan gradient branding with black/white contrast
+- **Responsive Design**: Mobile-first approach with breakpoints for all devices
+- **Animations**: Smooth transitions, hover effects, and scroll animations
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 18, TypeScript, Vite
-- **Styling**: Tailwind CSS, shadcn/ui
-- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **Frontend**: React 18 + TypeScript
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **Backend**: Supabase (PostgreSQL database, Authentication, Storage)
 - **Routing**: React Router v6
-- **State Management**: TanStack Query
-- **Forms**: React Hook Form + Zod
-- **Icons**: Lucide React
+- **State Management**: React Query (TanStack Query)
+- **Build Tool**: Vite
+- **Deployment**: Vercel (with Analytics and Speed Insights)
 
-## 📦 Installation
+## 📦 Project Structure
+
+```
+bizmillennium/
+├── src/
+│   ├── components/
+│   │   ├── home/           # Homepage sections
+│   │   │   ├── HeroSection.tsx
+│   │   │   ├── EventsSection.tsx
+│   │   │   ├── BlogSection.tsx
+│   │   │   └── ...
+│   │   ├── layout/         # Layout components
+│   │   │   ├── Header.tsx
+│   │   │   ├── Footer.tsx
+│   │   │   └── Layout.tsx
+│   │   └── ui/             # shadcn/ui components
+│   ├── pages/
+│   │   ├── Index.tsx       # Homepage
+│   │   ├── Events.tsx      # Events listing
+│   │   ├── Blog.tsx        # Blog listing
+│   │   ├── BlogDetail.tsx  # Individual blog post
+│   │   ├── Contact.tsx     # Contact page
+│   │   └── admin/          # Admin dashboard pages
+│   ├── integrations/
+│   │   └── supabase/       # Supabase client and types
+│   ├── hooks/              # Custom React hooks
+│   └── assets/             # Images and static files
+├── supabase/
+│   ├── migrations/         # Database migrations
+│   ├── schema.sql          # Database schema documentation
+│   └── seed.sql            # Sample data
+└── public/
+    ├── favicon.png         # Custom favicon
+    └── logo.png            # Brand logo
+```
+
+## 🚦 Getting Started
 
 ### Prerequisites
+- Node.js 18+ and pnpm
+- Supabase account and project
 
-- Node.js 18+ or Bun
-- npm, yarn, or bun package manager
+### Installation
 
-### Steps
-
-1. **Clone the repository**
-   ```bash
-   git clone <YOUR_GIT_URL>
-   cd <YOUR_PROJECT_NAME>
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   # or
-   bun install
-   ```
-
-3. **Start development server**
-   ```bash
-   npm run dev
-   # or
-   bun run dev
-   ```
-
-4. **Open in browser**
-   ```
-   http://localhost:5173
-   ```
-
-## 🗄️ Database Setup
-
-This project uses **Lovable Cloud** which provides an integrated Supabase backend. The database schema is automatically managed through migrations.
-
-For detailed setup instructions, see [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
-
-### Quick Start
-
-The database includes:
-- User authentication with profiles
-- Role-based access control (admin, moderator, user)
-- Content tables with Row-Level Security
-- Automatic triggers for new user setup
-
-### Making a User Admin
-
-```sql
-INSERT INTO public.user_roles (user_id, role)
-VALUES ('user-uuid', 'admin');
+1. Clone the repository:
+```bash
+git clone https://github.com/eliteforumscontentcreation/bizmillennium.git
+cd bizmillennium
 ```
 
-## 📁 Project Structure
-
-```
-├── public/              # Static assets
-├── src/
-│   ├── assets/          # Images and media
-│   ├── components/
-│   │   ├── admin/       # Admin panel components
-│   │   ├── home/        # Homepage sections
-│   │   ├── layout/      # Layout components
-│   │   └── ui/          # shadcn/ui components
-│   ├── hooks/           # Custom React hooks
-│   ├── integrations/    # Supabase client & types
-│   ├── lib/             # Utility functions
-│   ├── pages/           # Page components
-│   │   └── admin/       # Admin pages
-│   └── test/            # Test files
-├── supabase/
-│   ├── functions/       # Edge functions
-│   └── migrations/      # Database migrations
-└── docs/                # Documentation
+2. Install dependencies:
+```bash
+pnpm install
 ```
 
-## 🔐 Authentication
+3. Set up environment variables:
+Create a `.env.local` file with:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-The app uses Supabase Auth with:
-- Email/password sign up and sign in
-- Email verification (enabled by default)
-- Role-based access control
-- Protected admin routes
+4. Run the development server:
+```bash
+pnpm run dev
+```
 
-### User Roles
+5. Build for production:
+```bash
+pnpm run build
+```
 
-| Role | Access |
-|------|--------|
-| `user` | View public content |
-| `moderator` | Edit content (coming soon) |
-| `admin` | Full admin panel access |
+## 🗄️ Database Schema
+
+The application uses Supabase with the following main tables:
+- `events` - Event listings with dates, locations, and registration links
+- `blogs` - Blog posts with categories and featured images
+- `blog_categories` - Blog categorization
+- `gallery` - Event photo galleries
+- `careers` - Job postings
+- `job_applications` - Career applications
+- `testimonials` - Client testimonials
+- `partners` - Partner organizations
+- `brands` - Brand portfolio
+- `contact_submissions` - Contact form submissions
+- `site_settings` - Global site configuration
+
+See `supabase/schema.sql` for complete schema documentation.
+
+## 🔐 Admin Access
+
+Access the admin dashboard at `/admin` with appropriate credentials. Features include:
+- Event management (create, edit, delete)
+- Blog post management with rich content editor
+- Gallery management with event linking
+- Career posting and application tracking
+- Settings and configuration
+- User role management
 
 ## 🎨 Customization
 
-### Theming
+### Branding
+- Update logo: Replace `/public/logo.png`
+- Update favicon: Replace `/public/favicon.png`
+- Modify colors: Edit Tailwind config in `tailwind.config.ts`
+- Update fonts: Modify font imports in `src/index.css`
 
-Edit the CSS variables in `src/index.css`:
-```css
-:root {
-  --primary: 280 80% 55%;
-  --secondary: 220 14% 96%;
-  /* ... more variables */
-}
-```
+### Content
+- Homepage sections: Edit components in `src/components/home/`
+- Static pages: Edit files in `src/pages/`
+- Navigation: Update `src/components/layout/Header.tsx`
 
-### Components
+## 📱 Third-Party Integrations
 
-All UI components use shadcn/ui and can be customized in `src/components/ui/`.
+- **Zoho SalesIQ**: Live chat widget embedded in `index.html`
+- **Vercel Analytics**: Performance and user analytics
+- **Vercel Speed Insights**: Real-time performance monitoring
 
-## 📝 Environment Variables
+## 🐛 Known Issues
 
-The following variables are automatically configured:
-
-| Variable | Description |
-|----------|-------------|
-| `VITE_SUPABASE_URL` | Supabase project URL |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase anon key |
-| `VITE_SUPABASE_PROJECT_ID` | Project identifier |
-
-## 🧪 Testing
-
-```bash
-# Run tests
-npm run test
-
-# Run tests with coverage
-npm run test:coverage
-```
+- CSS warning about `@import` order in build (non-blocking)
+- Large bundle size warning (consider code splitting for optimization)
 
 ## 🚀 Deployment
 
-### Lovable
+The site is configured for Vercel deployment:
+1. Connect your GitHub repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
 
-Click **Share → Publish** in the Lovable editor.
+## 📝 Recent Commits
 
-### Vercel
-
-The project includes a `vercel.json` for SPA routing:
-
-```bash
-vercel deploy
-```
-
-### Other Platforms
-
-Build the project and deploy the `dist` folder:
-
-```bash
-npm run build
-```
-
-## 📄 API Reference
-
-### Supabase Client
-
-```typescript
-import { supabase } from "@/integrations/supabase/client";
-
-// Fetch data
-const { data, error } = await supabase
-  .from('events')
-  .select('*')
-  .order('event_date', { ascending: true });
-
-// Insert data (requires auth)
-const { data, error } = await supabase
-  .from('blogs')
-  .insert([{ title: 'New Post', slug: 'new-post' }]);
-```
+- `180fa4a` - Fix logo import path in Header component
+- `c95c290` - Update Upcoming Events button to redirect to /events page and adjust navbar alignment
+- `e4799dc` - Update View All Events button to redirect to events page upcoming tab
+- `261fd33` - Add BlogDetail page for individual blog posts and fix Events page sorting
+- `64d6175` - Update favicon and embed Zoho chatbot
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+This is a private project for Biz Millennium. For internal contributions:
+1. Create a feature branch
+2. Make your changes
+3. Submit a pull request with detailed description
 
-## 📜 License
+## 📄 License
 
-This project is proprietary software. All rights reserved.
+Proprietary - All rights reserved by Biz Millennium
+
+## 📞 Support
+
+For technical support or questions, contact the development team or visit the admin dashboard.
 
 ---
 
-Built with ❤️ using [Lovable](https://lovable.dev)
+**Last Updated**: February 11, 2026
+**Version**: 1.2.0
+**Maintained by**: Elite Forums Content Creation Team
