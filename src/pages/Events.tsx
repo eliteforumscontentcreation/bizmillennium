@@ -32,7 +32,8 @@ const isEventUpcoming = (eventDate: string | null): boolean => {
 };
 
 const Events = () => {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const [pastEvents, setPastEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +48,24 @@ const Events = () => {
         console.error("Error fetching events:", error);
         setError(error.message);
       } else if (data) {
-        setEvents(data);
+        // Automatically categorize events based on event_date
+        const upcoming = data.filter((e) => isEventUpcoming(e.event_date));
+        const past = data.filter((e) => !isEventUpcoming(e.event_date));
+        
+        // Sort upcoming events in ascending order (earliest first)
+        upcoming.sort((a, b) => {
+          if (!a.event_date || !b.event_date) return 0;
+          return new Date(a.event_date).getTime() - new Date(b.event_date).getTime();
+        });
+        
+        // Sort past events in descending order (most recent first)
+        past.sort((a, b) => {
+          if (!a.event_date || !b.event_date) return 0;
+          return new Date(b.event_date).getTime() - new Date(a.event_date).getTime();
+        });
+        
+        setUpcomingEvents(upcoming);
+        setPastEvents(past);
       }
     } catch (err) {
       console.error("Unexpected error:", err);
@@ -60,10 +78,6 @@ const Events = () => {
   useEffect(() => {
     fetchEvents();
   }, [fetchEvents]);
-
-  // Automatically categorize events based on event_date
-  const upcomingEvents = events.filter((e) => isEventUpcoming(e.event_date));
-  const pastEvents = events.filter((e) => !isEventUpcoming(e.event_date));
 
   const EventCard = ({ event }: { event: Event }) => {
     const imageUrl =

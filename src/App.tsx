@@ -8,7 +8,6 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import Index from "./pages/Index";
 import Events from "./pages/Events";
-import EventDetail from "./pages/EventDetail";
 import Blog from "./pages/Blog";
 import BlogDetail from "./pages/BlogDetail";
 import Contact from "./pages/Contact";
@@ -75,7 +74,6 @@ const App = () => (
             <Route path="/in-house" element={<InHouse />} />
             <Route path="/data-generation" element={<DataGeneration />} />
             <Route path="/events" element={<Events />} />
-            <Route path="/events/:slug" element={<EventDetail />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogDetail />} />
             <Route path="/contact" element={<Contact />} />
