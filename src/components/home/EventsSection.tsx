@@ -228,7 +228,7 @@ export function EventsSection() {
 
         <div className="text-center mt-12">
           <Button size="lg" variant="outline" asChild>
-            <Link to="/events">View All Events</Link>
+            <Link to="/events#upcoming">View All Events</Link>
           </Button>
         </div>
       </div>
