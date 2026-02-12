@@ -32,8 +32,6 @@ export function EventsSection() {
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [pastEvents, setPastEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAllUpcoming, setShowAllUpcoming] = useState(false);
-  const [showAllPast, setShowAllPast] = useState(false);
 
   const fetchEvents = useCallback(async () => {
     const { data, error } = await supabase
@@ -169,9 +167,9 @@ export function EventsSection() {
     );
   };
 
-  // Get displayed events (limit to 6 initially)
-  const displayedUpcomingEvents = showAllUpcoming ? upcomingEvents : upcomingEvents.slice(0, 6);
-  const displayedPastEvents = showAllPast ? pastEvents : pastEvents.slice(0, 6);
+  // Limit to 6 events for homepage display
+  const displayedUpcomingEvents = upcomingEvents.slice(0, 6);
+  const displayedPastEvents = pastEvents.slice(0, 6);
 
   return (
     <section
@@ -198,24 +196,11 @@ export function EventsSection() {
 
           <TabsContent value="upcoming">
             {upcomingEvents.length > 0 ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {displayedUpcomingEvents.map((event) => (
-                    <EventCard key={event.id} event={event} />
-                  ))}
-                </div>
-                {upcomingEvents.length > 6 && !showAllUpcoming && (
-                  <div className="text-center mt-8">
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      onClick={() => setShowAllUpcoming(true)}
-                    >
-                      View All Upcoming Events ({upcomingEvents.length})
-                    </Button>
-                  </div>
-                )}
-              </>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {displayedUpcomingEvents.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
             ) : (
               <div className="text-center py-12 bg-background rounded-2xl">
                 <p className="text-muted-foreground mb-4">
@@ -230,24 +215,11 @@ export function EventsSection() {
 
           <TabsContent value="past">
             {pastEvents.length > 0 ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {displayedPastEvents.map((event) => (
-                    <EventCard key={event.id} event={event} />
-                  ))}
-                </div>
-                {pastEvents.length > 6 && !showAllPast && (
-                  <div className="text-center mt-8">
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      onClick={() => setShowAllPast(true)}
-                    >
-                      View All Past Events ({pastEvents.length})
-                    </Button>
-                  </div>
-                )}
-              </>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {displayedPastEvents.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
             ) : (
               <div className="text-center py-12 bg-background rounded-2xl">
                 <p className="text-muted-foreground">
